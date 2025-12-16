@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organization Sign In - CoEvolve</title>
+        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #2563eb 100%);
+        }
+        
+        .input-focus {
+            transition: all 0.3s ease;
+        }
+        
+        .input-focus:focus {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(37, 99, 235, 0.2);
+        }
+        
+        .btn-login {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-login:hover {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(37, 99, 235, 0.4);
+        }
+        
+        .btn-login:active {
+            transform: translateY(0);
+        }
+        
+        .logo-container {
+            filter: drop-shadow(0 0 30px rgba(59, 130, 246, 0.4));
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .slide-in {
+            animation: slideIn 0.6s ease-out;
+        }
+        
+        .loading {
+            display: none;
+        }
+        
+        .loading.active {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .error-message {
+            display: none;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        .error-message.active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-md slide-in">
+        <!-- Logo -->
+        <div class="text-center mb-8 logo-container">
+        <div class="container mx-auto flex justify-center">
+            <img src="https://coevolvegroup.com/assets/images/logos/primary-logo.png" alt="CoEvolve Logo" class="h-12 logo-glow">
+        </div>
+            <h1 class="text-white text-2xl font-bold mt-4">Organization Sign In</h1>
+            <!-- <p class="text-blue-200 text-sm mt-2">Sign in to access your dashboard</p> -->
+        </div>
+
+        <!-- Login Card -->
+        <div class="bg-white rounded-2xl shadow-2xl p-8">
+            <!-- Error Message -->
+            <div id="errorMessage" class="error-message bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+                <div class="flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                    </svg>
+                    <span id="errorText" class="text-sm font-medium"></span>
+                </div>
+            </div>
+
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <!-- Username/Email/Phone Field -->
+                <div class="mb-6">
+                    <label for="username" class="block text-gray-700 font-semibold mb-2">
+                        Email
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            </svg>
+                        </div>
+                        <input 
+                            type="text" 
+                            id="username" 
+                            name="username"
+                            class="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none input-focus" 
+                            placeholder="Enter your email"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <!-- Password Field -->
+                <div class="mb-6">
+                    <label for="password" class="block text-gray-700 font-semibold mb-2">
+                        Password
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                            </svg>
+                        </div>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password"
+                            class="w-full pl-10 pr-12 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none input-focus" 
+                            placeholder="Enter your password"
+                            required
+                        >
+                        <button 
+                            type="button" 
+                            onclick="togglePassword()"
+                            class="absolute inset-y-0 right-0 pr-3 flex items-center"
+                        >
+                            <svg id="eyeIcon" class="w-5 h-5 text-gray-400 hover:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Remember Me -->
+                <!-- <div class="flex items-center mb-6">
+                    <input 
+                        type="checkbox" 
+                        id="remember" 
+                        class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                    >
+                    <label for="remember" class="ml-2 text-sm text-gray-600">
+                        Remember me on this device
+                    </label>
+                </div> -->
+
+                <!-- Login Button -->
+                <button 
+                    type="submit" 
+                    id="loginBtn"
+                    class="w-full py-3 px-4 btn-login text-white font-semibold rounded-lg shadow-lg flex items-center justify-center gap-2"
+                >
+                    <span id="loginText">Sign In</span>
+                    <span class="loading" id="loadingSpinner"></span>
+                    <svg id="arrowIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                    </svg>
+                </button>
+            </form>
+
+            <!-- Forgot Password Info -->
+            <div class="mt-6 text-center">
+                <p class="text-sm text-gray-600">
+                    Forgot password? 
+                    <!-- <button onclick="showAdminContact()" class="text-blue-600 hover:text-blue-700 font-semibold"> -->
+                        Contact your admin
+                    <!-- </button> -->
+                </p><br/>
+                <p class="text-sm text-gray-400">
+                    Admin Demo: admin/admin123<br/>
+                    CP Manager Demo: manager/manager123<br/> 
+                </p>
+            </div>
+
+            <!-- Divider -->
+            <!-- <div class="relative my-6">
+                <div class="absolute inset-0 flex items-center">
+                    <div class="w-full border-t border-gray-200"></div>
+                </div>
+                <div class="relative flex justify-center text-sm">
+                    <span class="px-2 bg-white text-gray-500">Need help?</span>
+                </div>
+            </div> -->
+
+            <!-- Support Link -->
+            <!-- <div class="text-center">
+                <a href="mailto:support@coevolve.com" class="text-sm text-gray-600 hover:text-blue-600 transition-colors">
+                    <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                    </svg>
+                    support@coevolve.com
+                </a>
+            </div> -->
+        </div>
+
+        <!-- Back to Home -->
+        <div class="text-center mt-6">
+            <a href="../index.php" class="text-blue-100 hover:text-white text-sm font-medium transition-colors inline-flex items-center gap-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                Back to Home
+            </a>
+        </div>
+    </div>
+
+    <!-- Modal for Admin Contact -->
+    <div id="adminModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 slide-in">
+            <div class="text-center">
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 mb-4">
+                    <svg class="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Contact Your Administrator</h3>
+                <p class="text-sm text-gray-600 mb-4">
+                    For password reset requests, please contact your organization administrator:
+                </p>
+                <div class="bg-blue-50 rounded-lg p-4 mb-4">
+                    <p class="text-sm font-semibold text-gray-700 mb-2">Admin Contact:</p>
+                    <p class="text-sm text-gray-600">Email: admin@coevolve.com</p>
+                    <p class="text-sm text-gray-600">Phone: +91 76763 33666</p>
+                </div>
+                <button 
+                    onclick="closeAdminModal()" 
+                    class="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
+                >
+                    Got it
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mock database with users and roles
+        const usersDB = [
+            { username: 'admin', email: 'admin@coevolve.com', phone: '9876543210', password: 'admin123', role: 'admin' },
+            { username: 'manager', email: 'manager@coevolve.com', phone: '9876543211', password: 'manager123', role: 'manager' },
+            { username: 'employee', email: 'employee@coevolve.com', phone: '9876543212', password: 'employee123', role: 'employee' },
+            { username: 'viewer', email: 'viewer@coevolve.com', phone: '9876543213', password: 'viewer123', role: 'viewer' }
+        ];
+
+        // Role-based redirect URLs
+        const roleRedirects = {
+            'admin': '../admin',
+            'manager': '../cpm',
+            // 'employee': '../employee/dashboard',
+            // 'viewer': '../viewer/dashboard'
+        };
+
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const eyeIcon = document.getElementById('eyeIcon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.innerHTML = `
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
+                `;
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.innerHTML = `
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                `;
+            }
+        }
+
+        function showError(message) {
+            const errorMessage = document.getElementById('errorMessage');
+            const errorText = document.getElementById('errorText');
+            errorText.textContent = message;
+            errorMessage.classList.add('active');
+            
+            setTimeout(() => {
+                errorMessage.classList.remove('active');
+            }, 5000);
+        }
+
+        function showAdminContact() {
+            document.getElementById('adminModal').classList.remove('hidden');
+        }
+
+        function closeAdminModal() {
+            document.getElementById('adminModal').classList.add('hidden');
+        }
+
+        async function handleLogin(event) {
+            event.preventDefault();
+            
+            const loginBtn = document.getElementById('loginBtn');
+            const loginText = document.getElementById('loginText');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const arrowIcon = document.getElementById('arrowIcon');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            // Hide error message
+            errorMessage.classList.remove('active');
+            
+            // Get form values
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            
+            // Show loading state
+            loginBtn.disabled = true;
+            loginText.textContent = 'Signing in...';
+            loadingSpinner.classList.add('active');
+            arrowIcon.classList.add('hidden');
+            
+            // Simulate API call delay
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            
+            // Find user in mock database
+            const user = usersDB.find(u => 
+                (u.username === username || u.email === username || u.phone === username) && 
+                u.password === password
+            );
+            
+            if (user) {
+                // Success - Redirect based on role
+                loginText.textContent = 'Success! Redirecting...';
+                
+                setTimeout(() => {
+                    console.log(`Redirecting to: ${roleRedirects[user.role]}`);
+                    console.log(`User role: ${user.role}`);
+                    console.log(`User details:`, user);
+                    
+                    // In production, uncomment this line:
+                    window.location.href = roleRedirects[user.role];
+                    
+                    
+                    // For demo purposes, show success message
+                    // alert(`Login successful!\nRole: ${user.role}\nRedirecting to: ${roleRedirects[user.role]}`);
+                    
+                    // Reset form
+                    document.getElementById('loginForm').reset();
+                    loginBtn.disabled = false;
+                    loginText.textContent = 'Sign In';
+                    loadingSpinner.classList.remove('active');
+                    arrowIcon.classList.remove('hidden');
+                }, 1000);
+            } else {
+                // Error - Invalid credentials
+                loginBtn.disabled = false;
+                loginText.textContent = 'Sign In';
+                loadingSpinner.classList.remove('active');
+                arrowIcon.classList.remove('hidden');
+                
+                showError('Invalid username or password. Please try again.');
+            }
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('adminModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeAdminModal();
+            }
+        });
+
+        // Demo credentials info (remove in production)
+        console.log('Demo Credentials:');
+        console.log('Admin - username: admin, password: admin123');
+        console.log('Manager - username: manager, password: manager123');
+        console.log('Employee - username: employee, password: employee123');
+        console.log('Viewer - username: viewer, password: viewer123');
+    </script>
+</body>
+</html>
