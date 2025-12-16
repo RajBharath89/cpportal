@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CP Managers - CoEvolve Organization</title>
+    <title>Leads - CoEvolve Organization</title>
     <link rel="apple-touch-icon" href="https://coevolvegroup.com/assets/images/fav.png" />
    <link rel="shortcut icon" type="image/x-icon" href="https://coevolvegroup.com/assets/images/fav.png" />
     <script src="https://cdn.tailwindcss.com"></script>
@@ -89,18 +89,56 @@
             border-left: 4px solid #2563eb;
         }
         
-        .badge-active {
+        .badge-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .badge-approved {
             background: #dcfce7;
             color: #166534;
         }
         
-        .badge-inactive {
+        .badge-rejected {
             background: #fee2e2;
             color: #991b1b;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 9999;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
         }
     </style>
 </head>
 <body class="bg-gray-50">
+    <!-- Notification -->
+    <div id="notification" class="notification bg-white rounded-lg shadow-lg border-l-4 border-green-500 p-4 w-80">
+        <div class="flex items-start gap-3">
+            <div class="flex-shrink-0">
+                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <div class="flex-1">
+                <h3 class="text-sm font-semibold text-gray-900">Success!</h3>
+                <p class="text-sm text-gray-600 mt-1" id="notificationText">Lead has been submitted successfully</p>
+            </div>
+            <button onclick="closeNotification()" class="flex-shrink-0 text-gray-400 hover:text-gray-600">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
     <!-- Top Header -->
     <header class="bg-gray-800 shadow-sm fixed top-0 left-0 right-0 z-40">
         <div class="flex items-center justify-between px-4 py-3">
@@ -153,27 +191,27 @@
 
     <div class="flex pt-16">
         <!-- Sidebar -->
-        <aside id="sidebar" class="sidebar fixed left-0 top-16 bottom-0 w-64 bg-white shadow-lg z-30 md:translate-x-0 sidebar-hidden">
+       <aside id="sidebar" class="sidebar fixed left-0 top-16 bottom-0 w-64 bg-white shadow-lg z-30 md:translate-x-0 sidebar-hidden">
             <nav class="p-4 space-y-1 mt-4">
-                <a href="index.php" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 font-medium">
+                <a href="index.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 font-medium">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                     </svg>
                     Dashboard
                 </a>                
-                <a href="cpm.php" class="nav-item active flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 font-medium">
+                <a href="cpm.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 font-medium">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
                     </svg>
                     CP Managers
                 </a>
-                <a href="cp.php" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 font-medium">
+                <a href="cp.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 font-medium">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
                     </svg>
                     Channel Partners
                 </a>
-                <a href="leads.php" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 font-medium">
+                <a href="leads.html" class="nav-item active   flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 font-medium">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                     </svg>
@@ -186,12 +224,12 @@
         <main class="flex-1 md:ml-64 p-4 md:p-8">
             <!-- Title and Add Button -->
             <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
-                <h1 class="text-2xl md:text-3xl font-bold text-gray-900">CP Managers</h1>
+                <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Leads</h1>
                 <button onclick="openAddModal()" class="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors shadow-sm">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                     </svg>
-                    Add CP Manager
+                    Add New Lead
                 </button>
             </div>
 
@@ -211,12 +249,12 @@
                                 id="searchInput"
                                 onkeyup="filterTable()"
                                 class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" 
-                                placeholder="Search by name, email, phone..."
+                                placeholder="Search by name, email, phone, project..."
                             >
                         </div>
                     </div>
                     
-                    <!-- Status Filter -->
+                    <!-- Approval Status Filter -->
                     <div class="w-full md:w-48">
                         <select 
                             id="statusFilter"
@@ -224,25 +262,26 @@
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
                         >
                             <option value="">All Status</option>
-                            <option value="active">Active</option>
-                            <option value="inactive">Inactive</option>
+                            <option value="pending">Pending</option>
+                            <option value="approved">Approved</option>
+                            <option value="rejected">Rejected</option>
                         </select>
                     </div>
                     
-                    <!-- Role Filter -->
-                    <!-- <div class="w-full md:w-48">
+                    <!-- Project Filter -->
+                    <div class="w-full md:w-48">
                         <select 
-                            id="roleFilter"
+                            id="projectFilter"
                             onchange="filterTable()"
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
                         >
-                            <option value="">All Roles</option>
-                            <option value="Manager">Manager</option>
-                            <option value="Senior Manager">Senior Manager</option>
-                            <option value="Team Lead">Team Lead</option>
-                            <option value="Supervisor">Supervisor</option>
+                            <option value="">All Projects</option>
+                            <option value="CoEvolve Florenza">CoEvolve Florenza</option>
+                            <option value="CoEvolve Misty Shores">CoEvolve Misty Shores</option>
+                            <option value="CoEvolve Northern Star">CoEvolve Northern Star</option>
+                            <option value="Asset Aura">Asset Aura</option>
                         </select>
-                    </div> -->
+                    </div>
                 </div>
             </div>
 
@@ -256,10 +295,11 @@
                                 <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Name</th>
                                 <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Email</th>
                                 <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Phone</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Designation</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Role</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Date Created</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Project</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Lead Posted By</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Posted On</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Approval Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Approved By</th>
                                 <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Action</th>
                             </tr>
                         </thead>
@@ -287,7 +327,7 @@
     <div id="addModal" class="modal fixed inset-0 bg-black bg-opacity-50 z-50 items-center justify-center p-4">
         <div class="modal-content bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-                <h2 id="modalTitle" class="text-xl font-bold text-gray-900">Add New CP Manager</h2>
+                <h2 id="modalTitle" class="text-xl font-bold text-gray-900">Add New Lead</h2>
                 <button onclick="closeAddModal()" class="text-gray-400 hover:text-gray-600">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -309,39 +349,44 @@
                         <input type="email" id="email" name="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" required>
                     </div>
                     
-                    <div>
+                    <div class="md:col-span-2">
                         <label class="block text-sm font-semibold text-gray-700 mb-2">Phone <span class="text-red-500">*</span></label>
-                        <input type="tel" id="phone" name="phone" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" pattern="[0-9+\s-]+" required>
+                        <div class="flex gap-2">
+                            <select id="countryCode" name="countryCode" class="w-32 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" required>
+                                <option value="+91">+91 (IN)</option>
+                                <option value="+1">+1 (US)</option>
+                                <option value="+44">+44 (UK)</option>
+                                <option value="+971">+971 (UAE)</option>
+                                <option value="+65">+65 (SG)</option>
+                                <option value="+61">+61 (AU)</option>
+                                <option value="+86">+86 (CN)</option>
+                            </select>
+                            <input type="tel" id="phoneNumber" name="phoneNumber" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" placeholder="9876543210" pattern="[0-9]+" required>
+                        </div>
                     </div>
                     
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Designation <span class="text-red-500">*</span></label>
-                        <input type="text" id="designation" name="designation" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" required>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Role <span class="text-red-500">*</span></label>
-                        <select id="role" name="role" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" required>
-                            <option value="">Select Role</option>
-                            <option value="Manager">Manager</option>
-                            <option value="Senior Manager">Senior Manager</option>
-                            <option value="Team Lead">Team Lead</option>
-                            <option value="Supervisor">Supervisor</option>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Project <span class="text-red-500">*</span></label>
+                        <select id="project" name="project" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" required>
+                            <option value="">Select Project</option>
+                            <option value="CoEvolve Florenza">CoEvolve Florenza</option>
+                            <option value="CoEvolve Misty Shores">CoEvolve Misty Shores</option>
+                            <option value="CoEvolve Northern Star">CoEvolve Northern Star</option>
+                            <option value="Asset Aura">Asset Aura</option>
+                            <option value="Asset Arcadia">Asset Arcadia</option>
+                            <option value="Asset Bliss">Asset Bliss</option>
                         </select>
                     </div>
                     
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Status <span class="text-red-500">*</span></label>
-                        <select id="status" name="status" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" required>
-                            <option value="active">Active</option>
-                            <option value="inactive">Inactive</option>
-                        </select>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Lead Posted By <span class="text-red-500">*</span></label>
+                        <input type="text" id="postedBy" name="postedBy" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" placeholder="Partner Name / ID" required>
                     </div>
                 </div>
                 
                 <div class="flex gap-3 mt-6">
                     <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
-                        <span id="submitBtnText">Save</span>
+                        <span id="submitBtnText">Submit Lead</span>
                     </button>
                     <button type="button" onclick="closeAddModal()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors">
                         Cancel
@@ -353,14 +398,14 @@
 
     <script>
         let tableData = [
-            { id: 'CPM001', name: 'John Doe', email: 'john.doe@example.com', phone: '+91 9876543210', designation: 'Regional Manager', role: 'Manager', status: 'active', dateCreated: '2024-01-15' },
-            { id: 'CPM002', name: 'Jane Smith', email: 'jane.smith@example.com', phone: '+91 9876543211', designation: 'Area Manager', role: 'Senior Manager', status: 'active', dateCreated: '2024-02-20' },
-            { id: 'CPM003', name: 'Mike Johnson', email: 'mike.j@example.com', phone: '+91 9876543212', designation: 'Team Leader', role: 'Team Lead', status: 'inactive', dateCreated: '2024-03-10' },
-            { id: 'CPM004', name: 'Sarah Williams', email: 'sarah.w@example.com', phone: '+91 9876543213', designation: 'Operations Manager', role: 'Manager', status: 'active', dateCreated: '2024-04-05' },
-            { id: 'CPM005', name: 'David Brown', email: 'david.b@example.com', phone: '+91 9876543214', designation: 'Sales Supervisor', role: 'Supervisor', status: 'active', dateCreated: '2024-05-12' },
-            { id: 'CPM006', name: 'Emily Davis', email: 'emily.d@example.com', phone: '+91 9876543215', designation: 'Branch Manager', role: 'Manager', status: 'inactive', dateCreated: '2024-06-18' },
-            { id: 'CPM007', name: 'Robert Wilson', email: 'robert.w@example.com', phone: '+91 9876543216', designation: 'District Manager', role: 'Senior Manager', status: 'active', dateCreated: '2024-07-22' },
-            { id: 'CPM008', name: 'Lisa Anderson', email: 'lisa.a@example.com', phone: '+91 9876543217', designation: 'Team Coordinator', role: 'Team Lead', status: 'active', dateCreated: '2024-08-30' }
+            { id: 'LD001', name: 'Ramesh Kumar', email: 'ramesh.k@example.com', countryCode: '+91', phone: '9876543210', project: 'CoEvolve Florenza', postedBy: 'Rajesh Kumar (CP001)', postedOn: '2024-12-10', approvalStatus: 'pending', approvedBy: '-' },
+            { id: 'LD002', name: 'Priya Sharma', email: 'priya.sharma@example.com', countryCode: '+91', phone: '9876543211', project: 'CoEvolve Misty Shores', postedBy: 'ABC Realty (CP002)', postedOn: '2024-12-09', approvalStatus: 'approved', approvedBy: 'Admin User' },
+            { id: 'LD003', name: 'Amit Patel', email: 'amit.p@example.com', countryCode: '+91', phone: '9876543212', project: 'Asset Aura', postedBy: 'Priya Sharma (CP003)', postedOn: '2024-12-08', approvalStatus: 'rejected', approvedBy: 'Admin User' },
+            { id: 'LD004', name: 'Sneha Reddy', email: 'sneha.r@example.com', countryCode: '+91', phone: '9876543213', project: 'CoEvolve Northern Star', postedBy: 'XYZ Properties (CP004)', postedOn: '2024-12-11', approvalStatus: 'pending', approvedBy: '-' },
+            { id: 'LD005', name: 'Vijay Kumar', email: 'vijay.k@example.com', countryCode: '+91', phone: '9876543214', project: 'CoEvolve Florenza', postedBy: 'Arun Patel (CP005)', postedOn: '2024-12-07', approvalStatus: 'approved', approvedBy: 'Admin User' },
+            { id: 'LD006', name: 'Anita Desai', email: 'anita.d@example.com', countryCode: '+91', phone: '9876543215', project: 'CoEvolve Misty Shores', postedBy: 'Premium Estates (CP006)', postedOn: '2024-12-12', approvalStatus: 'pending', approvedBy: '-' },
+            { id: 'LD007', name: 'Rahul Singh', email: 'rahul.s@example.com', countryCode: '+91', phone: '9876543216', project: 'Asset Arcadia', postedBy: 'Sneha Reddy (CP007)', postedOn: '2024-12-06', approvalStatus: 'approved', approvedBy: 'Admin User' },
+            { id: 'LD008', name: 'Meera Iyer', email: 'meera.i@example.com', countryCode: '+91', phone: '9876543217', project: 'Asset Bliss', postedBy: 'Elite Builders (CP008)', postedOn: '2024-12-05', approvalStatus: 'rejected', approvedBy: 'Admin User' }
         ];
 
         let filteredData = [...tableData];
@@ -370,7 +415,7 @@
             tbody.innerHTML = '';
             
             if (filteredData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="9" class="px-6 py-8 text-center text-gray-500">No records found</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="10" class="px-6 py-8 text-center text-gray-500">No records found</td></tr>';
                 document.getElementById('totalRecords').textContent = '0';
                 document.getElementById('showingStart').textContent = '0';
                 document.getElementById('showingEnd').textContent = '0';
@@ -384,15 +429,16 @@
                     <td class="px-6 py-4 text-sm font-medium text-gray-900">${row.id}</td>
                     <td class="px-6 py-4 text-sm text-gray-900">${row.name}</td>
                     <td class="px-6 py-4 text-sm text-gray-600">${row.email}</td>
-                    <td class="px-6 py-4 text-sm text-gray-600">${row.phone}</td>
-                    <td class="px-6 py-4 text-sm text-gray-600">${row.designation}</td>
-                    <td class="px-6 py-4 text-sm text-gray-600">${row.role}</td>
+                    <td class="px-6 py-4 text-sm text-gray-600">${row.countryCode} ${row.phone}</td>
+                    <td class="px-6 py-4 text-sm text-gray-600">${row.project}</td>
+                    <td class="px-6 py-4 text-sm text-gray-600">${row.postedBy}</td>
+                    <td class="px-6 py-4 text-sm text-gray-600">${formatDate(row.postedOn)}</td>
                     <td class="px-6 py-4">
-                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ${row.status === 'active' ? 'badge-active' : 'badge-inactive'}">
-                            ${row.status.charAt(0).toUpperCase() + row.status.slice(1)}
+                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusBadge(row.approvalStatus)}">
+                            ${row.approvalStatus.charAt(0).toUpperCase() + row.approvalStatus.slice(1)}
                         </span>
                     </td>
-                    <td class="px-6 py-4 text-sm text-gray-600">${formatDate(row.dateCreated)}</td>
+                    <td class="px-6 py-4 text-sm text-gray-600">${row.approvedBy}</td>
                     <td class="px-6 py-4 text-sm relative">
                         <button onclick="toggleActionMenu(${index})" class="text-gray-500 hover:text-gray-700">
                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -400,27 +446,27 @@
                             </svg>
                         </button>
                         <div id="actionMenu${index}" class="action-menu absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10">
+                            ${row.approvalStatus === 'pending' ? `
+                                <button onclick="handleAction('approve', ${tableData.indexOf(row)})" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    Approve
+                                </button>
+                                <button onclick="handleAction('reject', ${tableData.indexOf(row)})" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    Reject
+                                </button>
+                                <hr class="my-1">
+                            ` : ''}
                             <button onclick="editRecord(${tableData.indexOf(row)})" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
                                 <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                 </svg>
                                 Edit
                             </button>
-                            <hr class="my-1">
-                            ${row.status === 'active' ? 
-                                `<button onclick="handleAction('deactivate', ${tableData.indexOf(row)})" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
-                                    <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                    </svg>
-                                    Deactivate
-                                </button>` : 
-                                `<button onclick="handleAction('activate', ${tableData.indexOf(row)})" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
-                                    <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                    </svg>
-                                    Activate
-                                </button>`
-                            }
                         </div>
                     </td>
                 `;
@@ -432,6 +478,15 @@
             document.getElementById('showingEnd').textContent = Math.min(filteredData.length, 10);
         }
 
+        function getStatusBadge(status) {
+            switch(status) {
+                case 'pending': return 'badge-pending';
+                case 'approved': return 'badge-approved';
+                case 'rejected': return 'badge-rejected';
+                default: return 'badge-pending';
+            }
+        }
+
         function formatDate(dateString) {
             const date = new Date(dateString);
             return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
@@ -440,19 +495,20 @@
         function filterTable() {
             const searchInput = document.getElementById('searchInput').value.toLowerCase();
             const statusFilter = document.getElementById('statusFilter').value.toLowerCase();
-            const roleFilter = document.getElementById('roleFilter').value.toLowerCase();
+            const projectFilter = document.getElementById('projectFilter').value.toLowerCase();
             
             filteredData = tableData.filter(row => {
                 const matchesSearch = !searchInput || 
                     row.name.toLowerCase().includes(searchInput) ||
                     row.email.toLowerCase().includes(searchInput) ||
                     row.phone.toLowerCase().includes(searchInput) ||
-                    row.designation.toLowerCase().includes(searchInput);
+                    row.project.toLowerCase().includes(searchInput) ||
+                    row.postedBy.toLowerCase().includes(searchInput);
                     
-                const matchesStatus = !statusFilter || row.status === statusFilter;
-                const matchesRole = !roleFilter || row.role === roleFilter;
+                const matchesStatus = !statusFilter || row.approvalStatus === statusFilter;
+                const matchesProject = !projectFilter || row.project === projectFilter;
                 
-                return matchesSearch && matchesStatus && matchesRole;
+                return matchesSearch && matchesStatus && matchesProject;
             });
             
             renderTable();
@@ -484,12 +540,14 @@
         function handleAction(action, index) {
             const item = tableData[index];
             
-            if (action === 'activate') {
-                tableData[index].status = 'active';
-                alert(`${item.name} has been activated`);
-            } else if (action === 'deactivate') {
-                tableData[index].status = 'inactive';
-                alert(`${item.name} has been deactivated`);
+            if (action === 'approve') {
+                tableData[index].approvalStatus = 'approved';
+                tableData[index].approvedBy = 'Admin User';
+                showNotification(`Lead from ${item.name} has been approved`, 'success');
+            } else if (action === 'reject') {
+                tableData[index].approvalStatus = 'rejected';
+                tableData[index].approvedBy = 'Admin User';
+                showNotification(`Lead from ${item.name} has been rejected`, 'error');
             }
             
             filterTable();
@@ -498,16 +556,16 @@
         function editRecord(index) {
             const record = tableData[index];
             
-            document.getElementById('modalTitle').textContent = 'Edit CP Manager';
-            document.getElementById('submitBtnText').textContent = 'Update';
+            document.getElementById('modalTitle').textContent = 'Edit Lead';
+            document.getElementById('submitBtnText').textContent = 'Update Lead';
             document.getElementById('editIndex').value = index;
             
             document.getElementById('name').value = record.name;
             document.getElementById('email').value = record.email;
-            document.getElementById('phone').value = record.phone;
-            document.getElementById('designation').value = record.designation;
-            document.getElementById('role').value = record.role;
-            document.getElementById('status').value = record.status;
+            document.getElementById('countryCode').value = record.countryCode;
+            document.getElementById('phoneNumber').value = record.phone;
+            document.getElementById('project').value = record.project;
+            document.getElementById('postedBy').value = record.postedBy;
             
             openAddModal();
         }
@@ -519,9 +577,39 @@
         function closeAddModal() {
             document.getElementById('addModal').classList.remove('active');
             document.getElementById('addForm').reset();
-            document.getElementById('modalTitle').textContent = 'Add New CP Manager';
-            document.getElementById('submitBtnText').textContent = 'Save';
+            document.getElementById('modalTitle').textContent = 'Add New Lead';
+            document.getElementById('submitBtnText').textContent = 'Submit Lead';
             document.getElementById('editIndex').value = '';
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notificationText');
+            
+            notificationText.textContent = message;
+            
+            // Change color based on type
+            if (type === 'error') {
+                notification.classList.remove('border-green-500');
+                notification.classList.add('border-red-500');
+                notification.querySelector('svg').classList.remove('text-green-600');
+                notification.querySelector('svg').classList.add('text-red-600');
+            } else {
+                notification.classList.remove('border-red-500');
+                notification.classList.add('border-green-500');
+                notification.querySelector('svg').classList.remove('text-red-600');
+                notification.querySelector('svg').classList.add('text-green-600');
+            }
+            
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                closeNotification();
+            }, 5000);
+        }
+
+        function closeNotification() {
+            document.getElementById('notification').classList.remove('show');
         }
 
         function handleSubmit(event) {
@@ -533,10 +621,10 @@
             const entry = {
                 name: formData.get('name'),
                 email: formData.get('email'),
-                phone: formData.get('phone'),
-                designation: formData.get('designation'),
-                role: formData.get('role'),
-                status: formData.get('status')
+                countryCode: formData.get('countryCode'),
+                phone: formData.get('phoneNumber'),
+                project: formData.get('project'),
+                postedBy: formData.get('postedBy')
             };
             
             if (editIndex !== '') {
@@ -545,15 +633,17 @@
                     ...tableData[index],
                     ...entry
                 };
-                alert('CP Manager updated successfully!');
+                showNotification('Lead updated successfully!', 'success');
             } else {
                 const newEntry = {
-                    id: 'CPM' + String(tableData.length + 1).padStart(3, '0'),
+                    id: 'LD' + String(tableData.length + 1).padStart(3, '0'),
                     ...entry,
-                    dateCreated: new Date().toISOString().split('T')[0]
+                    postedOn: new Date().toISOString().split('T')[0],
+                    approvalStatus: 'pending',
+                    approvedBy: '-'
                 };
                 tableData.unshift(newEntry);
-                alert('CP Manager added successfully!');
+                showNotification('Lead has been submitted successfully!', 'success');
             }
             
             filterTable();
@@ -562,7 +652,8 @@
 
         function handleLogout() {
             if (confirm('Are you sure you want to logout?')) {
-                window.location.href = '../auth/login-org.php';
+                                window.location.href = '../auth/login-org.html';
+
             }
         }
 
