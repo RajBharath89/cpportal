@@ -14,7 +14,7 @@
         }
         
         .gradient-bg {
-            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #2563eb 100%);
+            background: linear-gradient(135deg, #0f172a 0%, #1a2640 50%, #2d3e5f 100%);
         }
         
         .input-focus {
@@ -23,18 +23,19 @@
         
         .input-focus:focus {
             transform: translateY(-2px);
-            box-shadow: 0 8px 16px rgba(37, 99, 235, 0.2);
+            box-shadow: 0 8px 16px rgba(149, 193, 61, 0.2);
         }
         
         .btn-login {
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            background: linear-gradient(135deg, #95c13d 0%, #7ba82d 100%);
+            color: #ffffff;
             transition: all 0.3s ease;
         }
         
         .btn-login:hover {
-            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            background: linear-gradient(135deg, #a8d955 0%, #98c945 100%);
             transform: translateY(-2px);
-            box-shadow: 0 12px 24px rgba(37, 99, 235, 0.4);
+            box-shadow: 0 12px 24px rgba(149, 193, 61, 0.4);
         }
         
         .btn-login:active {
@@ -42,7 +43,7 @@
         }
         
         .logo-container {
-            filter: drop-shadow(0 0 30px rgba(59, 130, 246, 0.4));
+            filter: drop-shadow(0 0 30px rgba(149, 193, 61, 0.4));
         }
         
         @keyframes slideIn {
@@ -127,7 +128,7 @@
                             type="text" 
                             id="username" 
                             name="username"
-                            class="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none input-focus" 
+                            class="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:outline-none input-focus" 
                             placeholder="Enter your email"
                             required
                         >
@@ -149,7 +150,7 @@
                             type="password" 
                             id="password" 
                             name="password"
-                            class="w-full pl-10 pr-12 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none input-focus" 
+                            class="w-full pl-10 pr-12 py-3 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:outline-none input-focus" 
                             placeholder="Enter your password"
                             required
                         >
@@ -171,7 +172,7 @@
                     <input 
                         type="checkbox" 
                         id="remember" 
-                        class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                        class="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
                     >
                     <label for="remember" class="ml-2 text-sm text-gray-600">
                         Remember me on this device
@@ -195,16 +196,37 @@
             <!-- Forgot Password Info -->
             <div class="mt-6 text-center">
                 <p class="text-sm text-gray-600">
-                    Forgot password? 
-                    <!-- <button onclick="showAdminContact()" class="text-blue-600 hover:text-blue-700 font-semibold"> -->
-                        Contact your admin
-                    <!-- </button> -->
-                </p><br/>
-                <p class="text-sm text-gray-400">
-                    Admin Demo: admin/admin123<br/>
-                    CP Manager Demo: manager/manager123<br/> 
+                    Forgot password? Contact your admin
                 </p>
+                <p class="text-sm text-gray-400">Demo Credentials
+                <br/>Admin: admin | admin123
+                <br/>CP Head: cphead | cphead123
+                <br/>CP Manager: manager | manager123
+            </p>
             </div>
+
+
+            <!-- <div class="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <p class="text-xs text-gray-500 font-semibold mb-2 text-center">Demo Login Credentials</p>
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                    <div class="bg-white p-2 rounded border">
+                        <span class="font-semibold text-gray-700">Admin</span><br/>
+                        <span class="text-gray-500">admin / admin123</span>
+                    </div>
+                    <div class="bg-white p-2 rounded border">
+                        <span class="font-semibold text-gray-700">CP Head</span><br/>
+                        <span class="text-gray-500">cphead / cphead123</span>
+                    </div>
+                    <div class="bg-white p-2 rounded border">
+                        <span class="font-semibold text-gray-700">CP Manager</span><br/>
+                        <span class="text-gray-500">manager / manager123</span>
+                    </div>
+                    <div class="bg-white p-2 rounded border">
+                        <span class="font-semibold text-gray-700">Channel Partner</span><br/>
+                        <span class="text-gray-500">partner / partner123</span>
+                    </div>
+                </div>
+            </div> -->
 
             <!-- Divider -->
             <!-- <div class="relative my-6">
@@ -218,7 +240,7 @@
 
             <!-- Support Link -->
             <!-- <div class="text-center">
-                <a href="mailto:support@coevolve.com" class="text-sm text-gray-600 hover:text-blue-600 transition-colors">
+                <a href="mailto:support@coevolve.com" class="text-sm text-gray-600 hover:text-green-600 transition-colors">
                     <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                     </svg>
@@ -229,7 +251,7 @@
 
         <!-- Back to Home -->
         <div class="text-center mt-6">
-            <a href="../index.html" class="text-blue-100 hover:text-white text-sm font-medium transition-colors inline-flex items-center gap-1">
+            <a href="../index.html" class="text-green-100 hover:text-white text-sm font-medium transition-colors inline-flex items-center gap-1">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                 </svg>
@@ -242,8 +264,8 @@
     <div id="adminModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 slide-in">
             <div class="text-center">
-                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 mb-4">
-                    <svg class="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
+                    <svg class="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
                 </div>
@@ -251,14 +273,14 @@
                 <p class="text-sm text-gray-600 mb-4">
                     For password reset requests, please contact your organization administrator:
                 </p>
-                <div class="bg-blue-50 rounded-lg p-4 mb-4">
+                <div class="bg-green-50 rounded-lg p-4 mb-4">
                     <p class="text-sm font-semibold text-gray-700 mb-2">Admin Contact:</p>
                     <p class="text-sm text-gray-600">Email: admin@coevolve.com</p>
                     <p class="text-sm text-gray-600">Phone: +91 76763 33666</p>
                 </div>
                 <button 
                     onclick="closeAdminModal()" 
-                    class="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
+                    class="w-full py-2 px-4 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-slate-900 font-semibold font-medium rounded-lg transition-colors"
                 >
                     Got it
                 </button>
@@ -269,18 +291,18 @@
     <script>
         // Mock database with users and roles
         const usersDB = [
-            { username: 'admin', email: 'admin@coevolve.com', phone: '9876543210', password: 'admin123', role: 'admin' },
-            { username: 'manager', email: 'manager@coevolve.com', phone: '9876543211', password: 'manager123', role: 'manager' },
-            { username: 'employee', email: 'employee@coevolve.com', phone: '9876543212', password: 'employee123', role: 'employee' },
-            { username: 'viewer', email: 'viewer@coevolve.com', phone: '9876543213', password: 'viewer123', role: 'viewer' }
+            { username: 'admin', email: 'admin@coevolve.com', phone: '9876543210', password: 'admin123', role: 'admin', name: 'Admin User' },
+            { username: 'cphead', email: 'cphead@coevolve.com', phone: '9876543214', password: 'cphead123', role: 'cphead', name: 'John Doe' },
+            { username: 'manager', email: 'manager@coevolve.com', phone: '9876543211', password: 'manager123', role: 'manager', name: 'Jane Smith' },
+            { username: 'partner', email: 'partner@coevolve.com', phone: '9876543215', password: 'partner123', role: 'partner', name: 'Rajesh Kumar' }
         ];
 
         // Role-based redirect URLs
         const roleRedirects = {
             'admin': '../admin',
+            'cphead': '../cphead',
             'manager': '../cpm',
-            // 'employee': '../employee/dashboard',
-            // 'viewer': '../viewer/dashboard'
+            'partner': '../cp'
         };
 
         function togglePassword() {
@@ -361,7 +383,7 @@
                     console.log(`User details:`, user);
                     
                     // In production, uncomment this line:
-                    window.location.href = roleRedirects[user.role] + "/index.html";
+                    window.location.href = roleRedirects[user.role] + "/leads.html";
                     
                     
                     // For demo purposes, show success message
@@ -395,9 +417,10 @@
         // Demo credentials info (remove in production)
         console.log('Demo Credentials:');
         console.log('Admin - username: admin, password: admin123');
-        console.log('Manager - username: manager, password: manager123');
-        console.log('Employee - username: employee, password: employee123');
-        console.log('Viewer - username: viewer, password: viewer123');
+        console.log('CP Head - username: cphead, password: cphead123');
+        console.log('CP Manager - username: manager, password: manager123');
+        console.log('Channel Partner - username: partner, password: partner123');
     </script>
 </body>
 </html>
+

@@ -10,38 +10,12 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         
-        html, body {
+        body {
             font-family: 'Inter', sans-serif;
-            height: 100%;
-            margin: 0;
-            overflow: hidden;
-        }
-        
-        .main-wrapper {
-            display: flex;
-            height: calc(100vh - 64px);
-            margin-top: 64px;
-        }
-        
-        .main-content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 1rem 2rem;
-        }
-        
-        .table-container {
-            overflow: hidden;
-        }
-        
-        .table-scroll {
-            overflow-y: auto;
-            max-height: calc(100vh - 450px);
         }
         
         .sidebar {
             transition: transform 0.3s ease;
-            height: 100vh;
-            overflow-y: auto;
         }
         
         .sidebar-hidden {
@@ -106,7 +80,7 @@
         
         .nav-item:hover {
             background: #f0f9e8;
-            color: #95c13d;
+            color: #2563eb;
         }
         
         .nav-item.active {
@@ -142,9 +116,139 @@
         .notification.show {
             transform: translateX(0);
         }
+
+        /* Carousel Styles */
+        .carousel-container {
+            position: relative;
+            width: 100%;
+            max-width: 100%;
+            aspect-ratio: 16/9;
+            overflow: hidden;
+            border-radius: 0.5rem;
+        }
+
+        .carousel-slide {
+            display: none;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .carousel-slide.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .carousel-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            padding: 1rem;
+            cursor: pointer;
+            border-radius: 50%;
+            transition: background 0.3s ease;
+            z-index: 10;
+        }
+
+        .carousel-button:hover {
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        .carousel-button.prev {
+            left: 1rem;
+        }
+
+        .carousel-button.next {
+            right: 1rem;
+        }
+
+        .carousel-dots {
+            position: absolute;
+            bottom: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0.5rem;
+            z-index: 10;
+        }
+
+        .carousel-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .carousel-dot.active {
+            background: #95c13d;
+        }
     </style>
 </head>
 <body class="bg-gray-50">
+    <!-- Carousel Modal (Shows on Page Load) -->
+    <div id="carouselModal" class="modal fixed inset-0 bg-black bg-opacity-70 z-50 items-center justify-center p-4">
+        <div class="modal-content bg-white rounded-xl shadow-2xl max-w-3xl w-full relative">
+            <!-- Close Button -->
+            <button onclick="closeCarouselModal()" class="absolute top-4 right-4 z-20 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100 transition-colors">
+                <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+
+            <!-- Carousel Container -->
+            <div>
+                <!-- <h2 class="text-2xl font-bold text-gray-900 mb-4 text-center">Welcome to CoEvolve Leads</h2> -->
+                
+                <div class="carousel-container">
+                    <!-- Carousel Images -->
+                    <img src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&h=450&fit=crop" alt="Slide 1" class="carousel-slide active">
+                    <img src="https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=800&h=450&fit=crop" alt="Slide 2" class="carousel-slide">
+                    <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=450&fit=crop" alt="Slide 3" class="carousel-slide">
+                    <img src="https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=800&h=450&fit=crop" alt="Slide 4" class="carousel-slide">
+
+                    <!-- Previous Button -->
+                    <button class="carousel-button prev" onclick="changeSlide(-1)">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                        </svg>
+                    </button>
+
+                    <!-- Next Button -->
+                    <button class="carousel-button next" onclick="changeSlide(1)">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </button>
+
+                    <!-- Dots Indicator -->
+                    <div class="carousel-dots" id="carouselDots"></div>
+                </div>
+
+                <!-- Caption or Description -->
+                <!-- <div class="mt-4 text-center">
+                    <p class="text-gray-600">Discover premium properties and manage your leads efficiently</p>
+                </div> -->
+
+                <!-- Call to Action -->
+                <!-- <div class="mt-6 flex justify-center">
+                    <button onclick="closeCarouselModal()" class="px-6 py-3 font-semibold rounded-lg transition-all" style="background: linear-gradient(135deg, #95c13d 0%, #7ba82d 100%); color: #ffffff;">
+                        Get Started
+                    </button>
+                </div> -->
+            </div>
+        </div>
+    </div>
+
     <!-- Notification -->
     <div id="notification" class="notification bg-white rounded-lg shadow-lg border-l-4 border-green-500 p-4 w-80">
         <div class="flex items-start gap-3">
@@ -170,14 +274,14 @@
         <div class="flex items-center justify-between px-4 py-3">
             <!-- Logo and Mobile Menu -->
             <div class="flex items-center gap-4">
-                <button onclick="toggleSidebar()" class="md:hidden text-white hover:text-gray-300">
+                <!-- <button onclick="toggleSidebar()" class="md:hidden text-white hover:text-gray-300">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                     </svg>
-                </button>
+                </button> -->
                 <div class="flex items-center text-white">
                     <img src="https://coevolvegroup.com/assets/images/logos/primary-logo.png" alt="CoEvolve Logo" class="h-10 mr-3">
-                    <span class="font-semibold">CP Manager</span>
+                    <span class="font-semibold">Channel Partner / Organization Name</span>
                 </div>
             </div>
 
@@ -185,10 +289,10 @@
             <div class="relative">
                 <button onclick="toggleUserMenu()" class="flex items-center gap-2 hover:bg-gray-900 rounded-lg px-3 py-2 transition-colors">
                     <div class="w-9 h-9 rounded-full flex items-center justify-center text-white font-semibold" style="background-color: #95c13d;">
-                        CM
+                        CP
                     </div>
                     <div class="hidden md:block text-left">
-                        <div class="text-sm font-semibold text-gray-100">CP Manager</div>
+                        <div class="text-sm font-semibold text-gray-100">Channel Partner</div>
                     </div>
                     <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
@@ -208,23 +312,22 @@
         </div>
     </header>
 
-    <div class="main-wrapper">
+    <div class="flex pt-16">
         <!-- Sidebar -->
-       <aside id="sidebar" class="sidebar fixed left-0 top-16 bottom-0 w-64 bg-white shadow-lg z-30 md:translate-x-0 sidebar-hidden">
+       <!-- <aside id="sidebar" class="sidebar fixed left-0 top-16 bottom-0 w-64 bg-white shadow-lg z-30 md:translate-x-0 sidebar-hidden">
             <nav class="p-4 space-y-1 mt-4">
-                <!-- <a href="cphead.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 font-medium">
+                <a href="index.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 font-medium">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                     </svg>
-                    CP Heads
-                </a>
-                
+                    Dashboard
+                </a>                
                 <a href="cpm.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 font-medium">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
                     </svg>
                     CP Managers
-                </a> -->
+                </a>
                 <a href="cp.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 font-medium">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
@@ -238,13 +341,13 @@
                     Leads
                 </a>
             </nav>
-        </aside>
+        </aside> -->
 
         <!-- Main Content -->
-        <main class="main-content md:ml-64">
+        <main class="flex-1 p-4 md:p-8">
             <!-- Title and Add Button -->
-            <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 mt-6 gap-4">
-                <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Leads</h1>
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
+                <h1 class="text-2xl md:text-3xl font-bold text-gray-900">My Leads</h1>
                 <button onclick="openAddModal()" class="flex items-center justify-center gap-2 px-6 py-3 font-semibold rounded-full transition-all" style="background: linear-gradient(135deg, #95c13d 0%, #7ba82d 100%); color: #ffffff;" onmouseover="this.style.background='linear-gradient(135deg, #a8d955 0%, #98c945 100%)'; this.style.transform='scale(1.02)';" onmouseout="this.style.background='linear-gradient(135deg, #95c13d 0%, #7ba82d 100%)'; this.style.transform='scale(1)';">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
@@ -254,62 +357,6 @@
             </div>
 
 
-
-            <!-- Stats Cards -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm text-gray-500 mb-1">Total Leads</p>
-                            <p class="text-2xl font-bold text-gray-900" id="stat-total">0</p>
-                        </div>
-                        <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
-                            <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm text-gray-500 mb-1">Pending</p>
-                            <p class="text-2xl font-bold text-yellow-600" id="stat-pending">0</p>
-                        </div>
-                        <div class="w-12 h-12 rounded-full bg-yellow-100 flex items-center justify-center">
-                            <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm text-gray-500 mb-1">Approved</p>
-                            <p class="text-2xl font-bold text-green-600" id="stat-approved">0</p>
-                        </div>
-                        <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
-                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm text-gray-500 mb-1">Rejected</p>
-                            <p class="text-2xl font-bold text-red-600" id="stat-rejected">0</p>
-                        </div>
-                        <div class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
-                            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             <!-- Search and Filters -->
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
@@ -332,19 +379,6 @@
                         </div>
                     </div>
                     
-                    <!-- Status Filter -->
-                    <div class="w-full md:w-48">
-                        <select 
-                            id="statusFilter"
-                            onchange="filterTable()"
-                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500"
-                        >
-                            <option value="">All Status</option>
-                            <option value="pending">Pending</option>
-                            <option value="approved">Approved</option>
-                            <option value="rejected">Rejected</option>
-                        </select>
-                    </div>
                     
                     <!-- Project Filter -->
                     <div class="w-full md:w-48">
@@ -364,17 +398,16 @@
             </div>
 
             <!-- Data Table -->
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden table-container">
-                <div class="table-scroll">
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                <div class="overflow-x-auto">
                     <table class="w-full">
-                        <thead class="bg-gray-50 border-b border-gray-200 sticky top-0">
+                        <thead class="bg-gray-50 border-b border-gray-200">
                             <tr>
                                 <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">ID</th>
                                 <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Name</th>
                                 <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Email</th>
                                 <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Phone</th>
                                 <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Project</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Posted By</th>
                                 <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Posted On</th>
                             </tr>
                         </thead>
@@ -473,7 +506,7 @@
                 </div>
                 
                 <div class="flex gap-3 mt-6">
-                    <button type="submit" class="flex-1 text-white px-4 py-2 rounded-lg font-medium transition-colors" style="background: linear-gradient(135deg, #95c13d 0%, #7ba82d 100%);" onmouseover="this.style.background='linear-gradient(135deg, #a8d955 0%, #98c945 100%)'; this.style.transform='scale(1.02);'" onmouseout="this.style.background='linear-gradient(135deg, #95c13d 0%, #7ba82d 100%)'; this.style.transform='scale(1);'">
+                    <button type="submit" class="flex-1 text-white px-4 py-2 rounded-lg font-medium transition-colors" style="background: linear-gradient(135deg, #95c13d 0%, #7ba82d 100%);" onmouseover="this.style.background='linear-gradient(135deg, #a8d955 0%, #98c945 100%)'; this.style.transform='scale(1.02);'" onmouseout="this.style.background='linear-gradient(135deg, #95c13d 0%, #7ba82d 100%)'; this.style.transform='scale(1)';'">
                         <span id="submitBtnText">Submit Lead</span>
                     </button>
                     <button type="button" onclick="closeAddModal()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors">
@@ -485,6 +518,64 @@
     </div>
 
     <script>
+        // Carousel functionality
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.carousel-slide');
+        const totalSlides = slides.length;
+
+        function initCarousel() {
+            // Create dots
+            const dotsContainer = document.getElementById('carouselDots');
+            for (let i = 0; i < totalSlides; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+                dot.onclick = () => goToSlide(i);
+                dotsContainer.appendChild(dot);
+            }
+
+            // Show carousel modal on page load
+            setTimeout(() => {
+                document.getElementById('carouselModal').classList.add('active');
+            }, 300);
+
+            // Auto-advance carousel every 5 seconds
+            setInterval(() => {
+                changeSlide(1);
+            }, 5000);
+        }
+
+        function changeSlide(direction) {
+            slides[currentSlide].classList.remove('active');
+            document.querySelectorAll('.carousel-dot')[currentSlide].classList.remove('active');
+            
+            currentSlide = (currentSlide + direction + totalSlides) % totalSlides;
+            
+            slides[currentSlide].classList.add('active');
+            document.querySelectorAll('.carousel-dot')[currentSlide].classList.add('active');
+        }
+
+        function goToSlide(index) {
+            slides[currentSlide].classList.remove('active');
+            document.querySelectorAll('.carousel-dot')[currentSlide].classList.remove('active');
+            
+            currentSlide = index;
+            
+            slides[currentSlide].classList.add('active');
+            document.querySelectorAll('.carousel-dot')[currentSlide].classList.add('active');
+        }
+
+        function closeCarouselModal() {
+            document.getElementById('carouselModal').classList.remove('active');
+        }
+
+        // Close carousel modal when clicking outside
+        document.getElementById('carouselModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeCarouselModal();
+            }
+        });
+
+        // Table data and functionality
         let tableData = [
             { id: 'LD001', name: 'Ramesh Kumar', email: 'ramesh.k@example.com', countryCode: '+91', phone: '9876543210', project: 'CoEvolve Florenza', postedBy: 'Rajesh Kumar (CP001)', postedOn: '2024-12-10', approvalStatus: 'pending', approvedBy: '-' },
             { id: 'LD002', name: 'Priya Sharma', email: 'priya.sharma@example.com', countryCode: '+91', phone: '9876543211', project: 'CoEvolve Misty Shores', postedBy: 'ABC Realty (CP002)', postedOn: '2024-12-09', approvalStatus: 'approved', approvedBy: 'Admin User' },
@@ -493,29 +584,45 @@
             { id: 'LD005', name: 'Vijay Kumar', email: 'vijay.k@example.com', countryCode: '+91', phone: '9876543214', project: 'CoEvolve Florenza', postedBy: 'Arun Patel (CP005)', postedOn: '2024-12-07', approvalStatus: 'approved', approvedBy: 'Admin User' },
             { id: 'LD006', name: 'Anita Desai', email: 'anita.d@example.com', countryCode: '+91', phone: '9876543215', project: 'CoEvolve Misty Shores', postedBy: 'Premium Estates (CP006)', postedOn: '2024-12-12', approvalStatus: 'pending', approvedBy: '-' },
             { id: 'LD007', name: 'Rahul Singh', email: 'rahul.s@example.com', countryCode: '+91', phone: '9876543216', project: 'Asset Arcadia', postedBy: 'Sneha Reddy (CP007)', postedOn: '2024-12-06', approvalStatus: 'approved', approvedBy: 'Admin User' },
-            { id: 'LD008', name: 'Meera Iyer', email: 'meera.i@example.com', countryCode: '+91', phone: '9876543217', project: 'Asset Bliss', postedBy: 'Elite Builders (CP008)', postedOn: '2024-12-05', approvalStatus: 'rejected', approvedBy: 'Admin User' }
+            { id: 'LD008', name: 'Meera Iyer', email: 'meera.i@example.com', countryCode: '+91', phone: '9876543217', project: 'Asset Bliss', postedBy: 'Elite Builders (CP008)', postedOn: '2024-12-05', approvalStatus: 'rejected', approvedBy: 'Admin User' },
+            { id: 'LD009', name: 'Arjun Nair', email: 'arjun.n@example.com', countryCode: '+91', phone: '9876543218', project: 'CoEvolve Florenza', postedBy: 'Venture Homes (CP009)', postedOn: '2024-12-04', approvalStatus: 'approved', approvedBy: 'Admin User' },
+            { id: 'LD010', name: 'Divya Menon', email: 'divya.m@example.com', countryCode: '+91', phone: '9876543219', project: 'Asset Aura', postedBy: 'Green Properties (CP010)', postedOn: '2024-12-03', approvalStatus: 'pending', approvedBy: '-' },
+            { id: 'LD011', name: 'Karan Chopra', email: 'karan.c@example.com', countryCode: '+91', phone: '9876543220', project: 'CoEvolve Misty Shores', postedBy: 'Shree Builders (CP011)', postedOn: '2024-12-02', approvalStatus: 'approved', approvedBy: 'Admin User' },
+            { id: 'LD012', name: 'Neha Singh', email: 'neha.s@example.com', countryCode: '+91', phone: '9876543221', project: 'CoEvolve Northern Star', postedBy: 'Royal Estates (CP012)', postedOn: '2024-12-01', approvalStatus: 'rejected', approvedBy: 'Admin User' },
+            { id: 'LD013', name: 'Rohan Kumar', email: 'rohan.k@example.com', countryCode: '+91', phone: '9876543222', project: 'Asset Arcadia', postedBy: 'Prime Developers (CP013)', postedOn: '2024-11-30', approvalStatus: 'pending', approvedBy: '-' },
+            { id: 'LD014', name: 'Sonal Gupta', email: 'sonal.g@example.com', countryCode: '+91', phone: '9876543223', project: 'Asset Bliss', postedBy: 'Urban Constructions (CP014)', postedOn: '2024-11-29', approvalStatus: 'approved', approvedBy: 'Admin User' },
+            { id: 'LD015', name: 'Vikram Singh', email: 'vikram.s@example.com', countryCode: '+91', phone: '9876543224', project: 'CoEvolve Florenza', postedBy: 'Landmark Homes (CP015)', postedOn: '2024-11-28', approvalStatus: 'pending', approvedBy: '-' },
+            { id: 'LD016', name: 'Isha Kapoor', email: 'isha.k@example.com', countryCode: '+91', phone: '9876543225', project: 'CoEvolve Misty Shores', postedBy: 'Summit Realty (CP016)', postedOn: '2024-11-27', approvalStatus: 'approved', approvedBy: 'Admin User' },
+            { id: 'LD017', name: 'Nikhil Verma', email: 'nikhil.v@example.com', countryCode: '+91', phone: '9876543226', project: 'Asset Aura', postedBy: 'Harmony Living (CP017)', postedOn: '2024-11-26', approvalStatus: 'rejected', approvedBy: 'Admin User' },
+            { id: 'LD018', name: 'Pooja Rani', email: 'pooja.r@example.com', countryCode: '+91', phone: '9876543227', project: 'CoEvolve Northern Star', postedBy: 'Eco Builders (CP018)', postedOn: '2024-11-25', approvalStatus: 'approved', approvedBy: 'Admin User' },
+            { id: 'LD019', name: 'Sameer Khan', email: 'sameer.k@example.com', countryCode: '+91', phone: '9876543228', project: 'Asset Arcadia', postedBy: 'Nova Properties (CP019)', postedOn: '2024-11-24', approvalStatus: 'pending', approvedBy: '-' },
+            { id: 'LD020', name: 'Tanya Verma', email: 'tanya.v@example.com', countryCode: '+91', phone: '9876543229', project: 'Asset Bliss', postedBy: 'Zenith Estates (CP020)', postedOn: '2024-11-23', approvalStatus: 'approved', approvedBy: 'Admin User' },
+            { id: 'LD021', name: 'Umer Ahmed', email: 'umer.a@example.com', countryCode: '+91', phone: '9876543230', project: 'CoEvolve Florenza', postedBy: 'Prism Developers (CP021)', postedOn: '2024-11-22', approvalStatus: 'pending', approvedBy: '-' },
+            { id: 'LD022', name: 'Vanessa Lopez', email: 'vanessa.l@example.com', countryCode: '+91', phone: '9876543231', project: 'CoEvolve Misty Shores', postedBy: 'Sterling Homes (CP022)', postedOn: '2024-11-21', approvalStatus: 'approved', approvedBy: 'Admin User' },
+            { id: 'LD023', name: 'Waqar Hassan', email: 'waqar.h@example.com', countryCode: '+91', phone: '9876543232', project: 'Asset Aura', postedBy: 'Quantum Properties (CP023)', postedOn: '2024-11-20', approvalStatus: 'rejected', approvedBy: 'Admin User' },
+            { id: 'LD024', name: 'Xavier Fernandes', email: 'xavier.f@example.com', countryCode: '+91', phone: '9876543233', project: 'CoEvolve Northern Star', postedBy: 'Stellar Builders (CP024)', postedOn: '2024-11-19', approvalStatus: 'approved', approvedBy: 'Admin User' },
+            { id: 'LD025', name: 'Yashvi Patel', email: 'yashvi.p@example.com', countryCode: '+91', phone: '9876543234', project: 'Asset Arcadia', postedBy: 'Infinity Realty (CP025)', postedOn: '2024-11-18', approvalStatus: 'pending', approvedBy: '-' }
         ];
 
         let filteredData = [...tableData];
-        let currentPage = 1;
         let recordsPerPage = 10;
+        let currentPage = 1;
 
         function renderTable() {
             const tbody = document.getElementById('tableBody');
             tbody.innerHTML = '';
             
             if (filteredData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="10" class="px-6 py-8 text-center text-gray-500">No records found</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" class="px-6 py-8 text-center text-gray-500">No records found</td></tr>';
                 updatePagination();
-                updateStats();
                 return;
             }
             
-            const start = (currentPage - 1) * recordsPerPage;
-            const end = start + recordsPerPage;
-            const pageData = filteredData.slice(start, end);
+            const startIndex = (currentPage - 1) * recordsPerPage;
+            const endIndex = startIndex + recordsPerPage;
+            const paginatedData = filteredData.slice(startIndex, endIndex);
             
-            pageData.forEach((row, index) => {
+            paginatedData.forEach((row, index) => {
                 const tr = document.createElement('tr');
                 tr.className = 'hover:bg-gray-50';
                 tr.innerHTML = `
@@ -524,101 +631,16 @@
                     <td class="px-6 py-4 text-sm text-gray-600">${row.email}</td>
                     <td class="px-6 py-4 text-sm text-gray-600">${row.countryCode} ${row.phone}</td>
                     <td class="px-6 py-4 text-sm text-gray-600">${row.project}</td>
-                    <td class="px-6 py-4 text-sm text-gray-600">${row.postedBy}</td>
                     <td class="px-6 py-4 text-sm text-gray-600">${formatDate(row.postedOn)}</td>
-                   
                 `;
                 tbody.appendChild(tr);
             });
             
             updatePagination();
-            updateStats();
-        }
-
-        function updatePagination() {
-            const totalPages = Math.ceil(filteredData.length / recordsPerPage);
-            const start = filteredData.length > 0 ? (currentPage - 1) * recordsPerPage + 1 : 0;
-            const end = Math.min(currentPage * recordsPerPage, filteredData.length);
-            
-            document.getElementById('totalRecords').textContent = filteredData.length;
-            document.getElementById('showingStart').textContent = start;
-            document.getElementById('showingEnd').textContent = end;
-            
-            document.getElementById('prevBtn').disabled = currentPage === 1;
-            document.getElementById('nextBtn').disabled = currentPage >= totalPages || totalPages === 0;
-            
-            const paginationNumbers = document.getElementById('paginationNumbers');
-            paginationNumbers.innerHTML = '';
-            
-            for (let i = 1; i <= totalPages; i++) {
-                const btn = document.createElement('button');
-                btn.textContent = i;
-                btn.className = i === currentPage 
-                    ? 'px-3 py-1 text-white rounded-lg text-sm'
-                    : 'px-3 py-1 border border-gray-300 rounded-lg text-sm hover:bg-gray-50';
-                if (i === currentPage) {
-                    btn.style.background = 'linear-gradient(135deg, #95c13d 0%, #7ba82d 100%)';
-                }
-                btn.onclick = () => goToPage(i);
-                paginationNumbers.appendChild(btn);
-            }
-        }
-
-        function updateStats() {
-            const total = filteredData.length;
-            const pending = filteredData.filter(r => r.approvalStatus === 'pending').length;
-            const approved = filteredData.filter(r => r.approvalStatus === 'approved').length;
-            const rejected = filteredData.filter(r => r.approvalStatus === 'rejected').length;
-            
-            document.getElementById('stat-total').textContent = total;
-            document.getElementById('stat-pending').textContent = pending;
-            document.getElementById('stat-approved').textContent = approved;
-            document.getElementById('stat-rejected').textContent = rejected;
-        }
-
-        function previousPage() {
-            if (currentPage > 1) {
-                currentPage--;
-                renderTable();
-            }
-        }
-
-        function nextPage() {
-            const totalPages = Math.ceil(filteredData.length / recordsPerPage);
-            if (currentPage < totalPages) {
-                currentPage++;
-                renderTable();
-            }
-        }
-
-        function goToPage(page) {
-            currentPage = page;
-            renderTable();
-        }
-
-        function changeRecordsPerPage() {
-            recordsPerPage = parseInt(document.getElementById('recordsPerPage').value);
-            currentPage = 1;
-            renderTable();
-        }
-
-        function getStatusBadge(status) {
-            switch(status) {
-                case 'pending': return 'badge-pending';
-                case 'approved': return 'badge-approved';
-                case 'rejected': return 'badge-rejected';
-                default: return 'badge-pending';
-            }
-        }
-
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-            return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
         }
 
         function filterTable() {
             const searchInput = document.getElementById('searchInput').value.toLowerCase();
-            const statusFilter = document.getElementById('statusFilter').value.toLowerCase();
             const projectFilter = document.getElementById('projectFilter').value.toLowerCase();
             
             filteredData = tableData.filter(row => {
@@ -629,14 +651,81 @@
                     row.project.toLowerCase().includes(searchInput) ||
                     row.postedBy.toLowerCase().includes(searchInput);
                     
-                const matchesStatus = !statusFilter || row.approvalStatus === statusFilter;
-                const matchesProject = !projectFilter || row.project === projectFilter;
+                const matchesProject = !projectFilter || row.project.toLowerCase() === projectFilter;
                 
-                return matchesSearch && matchesStatus && matchesProject;
+                return matchesSearch && matchesProject;
             });
             
             currentPage = 1;
             renderTable();
+        }
+
+        function updatePagination() {
+            const totalPages = Math.ceil(filteredData.length / recordsPerPage);
+            const startIndex = (currentPage - 1) * recordsPerPage;
+            const endIndex = Math.min(startIndex + recordsPerPage, filteredData.length);
+            
+            document.getElementById('totalRecords').textContent = filteredData.length;
+            document.getElementById('showingStart').textContent = filteredData.length > 0 ? startIndex + 1 : 0;
+            document.getElementById('showingEnd').textContent = endIndex;
+            
+            // Update pagination numbers
+            const paginationNumbers = document.getElementById('paginationNumbers');
+            paginationNumbers.innerHTML = '';
+            
+            for (let i = 1; i <= totalPages; i++) {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.textContent = i;
+                btn.className = `px-3 py-1 rounded-lg text-sm transition-colors ${
+                    i === currentPage 
+                        ? 'text-white' 
+                        : 'border border-gray-300 hover:bg-gray-50'
+                }`;
+                if (i === currentPage) {
+                    btn.style.background = 'linear-gradient(135deg, #95c13d 0%, #7ba82d 100%)';
+                    btn.style.color = '#0f172a';
+                }
+                btn.onclick = () => goToPage(i);
+                paginationNumbers.appendChild(btn);
+            }
+            
+            // Update prev/next button states
+            document.getElementById('prevBtn').disabled = currentPage === 1;
+            document.getElementById('nextBtn').disabled = currentPage === totalPages;
+        }
+
+        function goToPage(page) {
+            const totalPages = Math.ceil(filteredData.length / recordsPerPage);
+            if (page >= 1 && page <= totalPages) {
+                currentPage = page;
+                renderTable();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function previousPage() {
+            if (currentPage > 1) {
+                goToPage(currentPage - 1);
+            }
+        }
+
+        function nextPage() {
+            const totalPages = Math.ceil(filteredData.length / recordsPerPage);
+            if (currentPage < totalPages) {
+                goToPage(currentPage + 1);
+            }
+        }
+
+        function changeRecordsPerPage() {
+            recordsPerPage = parseInt(document.getElementById('recordsPerPage').value);
+            currentPage = 1;
+            renderTable();
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
         }
 
         function toggleSidebar() {
@@ -799,8 +888,7 @@
 
         function handleLogout() {
             if (confirm('Are you sure you want to logout?')) {
-                                window.location.href = '../auth/login-org.html';
-
+                window.location.href = '../auth/login-cp.html';
             }
         }
 
@@ -818,6 +906,8 @@
             }
         });
 
+        // Initialize carousel and render table
+        initCarousel();
         renderTable();
     </script>
 </body>

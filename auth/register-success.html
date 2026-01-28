@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Submitted - CoEvolve</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #0f172a 0%, #1a2640 50%, #2d3e5f 100%);
+        }
+        
+        .btn-green {
+            background: linear-gradient(135deg, #95c13d 0%, #7ba82d 100%);
+            color: #ffffff;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-green:hover {
+            background: linear-gradient(135deg, #a8d955 0%, #98c945 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(149, 193, 61, 0.4);
+        }
+        
+        .logo-container {
+            filter: drop-shadow(0 0 30px rgba(149, 193, 61, 0.4));
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .slide-in {
+            animation: slideIn 0.6s ease-out;
+        }
+        
+        @keyframes checkmark {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        .checkmark-animate {
+            animation: checkmark 0.6s ease-out 0.3s forwards;
+            opacity: 0;
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-lg">
+        <div class="logo-container text-center mb-8 slide-in">
+            <img src="https://coevolvegroup.com/assets/images/logos/primary-logo.png" alt="CoEvolve Logo" class="h-16 mx-auto mb-4">
+            <h1 class="text-white text-xl font-semibold">Channel Partner Portal</h1>
+        </div>
+        
+        <div class="bg-white rounded-2xl shadow-2xl p-8 md:p-10 slide-in text-center">
+            <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 checkmark-animate">
+                <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                </svg>
+            </div>
+            
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">Registration Submitted</h2>
+            
+            <p class="text-gray-600 text-lg leading-relaxed mb-8">
+                Your details have been submitted. You will receive the login credentials on email post verification and approval.
+            </p>
+            
+            <a href="login-cp.html" class="btn-green inline-flex items-center justify-center gap-2 px-8 py-3 rounded-xl font-semibold text-lg">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+                </svg>
+                Go to Login
+            </a>
+        </div>
+        
+        <p class="text-center text-gray-400 text-sm mt-8 slide-in">
+            &copy; 2026 CoEvolve Group. All rights reserved.
+        </p>
+    </div>
+</body>
+</html>

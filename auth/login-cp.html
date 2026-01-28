@@ -14,7 +14,7 @@
         }
         
         .gradient-bg {
-            background: linear-gradient(135deg, #065f46 0%, #047857 50%, #059669 100%);
+            background: linear-gradient(135deg, #0f172a 0%, #1a2640 50%, #2d3e5f 100%);
         }
         
         .input-focus {
@@ -23,18 +23,19 @@
         
         .input-focus:focus {
             transform: translateY(-2px);
-            box-shadow: 0 8px 16px rgba(5, 150, 105, 0.2);
+            box-shadow: 0 8px 16px rgba(149, 193, 61, 0.2);
         }
         
         .btn-green {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            background: linear-gradient(135deg, #95c13d 0%, #7ba82d 100%);
+            color: #ffffff;
             transition: all 0.3s ease;
         }
         
         .btn-green:hover {
-            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            background: linear-gradient(135deg, #a8d955 0%, #98c945 100%);
             transform: translateY(-2px);
-            box-shadow: 0 12px 24px rgba(5, 150, 105, 0.4);
+            box-shadow: 0 12px 24px rgba(149, 193, 61, 0.4);
         }
         
         .btn-green:active {
@@ -42,7 +43,7 @@
         }
         
         .logo-container {
-            filter: drop-shadow(0 0 30px rgba(16, 185, 129, 0.4));
+            filter: drop-shadow(0 0 30px rgba(149, 193, 61, 0.4));
         }
         
         @keyframes slideIn {
@@ -61,8 +62,8 @@
         }
         
         .tab-active {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white;
+            background: linear-gradient(135deg, #95c13d 0%, #7ba82d 100%);
+            color: #ffffff;
         }
         
         .tab-inactive {
@@ -112,8 +113,8 @@
         }
         
         .radio-custom:checked {
-            border-color: #10b981;
-            background-color: #10b981;
+            border-color: #95c13d;
+            background-color: #95c13d;
             box-shadow: inset 0 0 0 4px white;
         }
     </style>
@@ -343,7 +344,7 @@
                 <!-- PAN Card -->
                 <div class="mb-6">
                     <label for="panCard" class="block text-gray-700 font-semibold mb-2">
-                        PAN Card Number <span class="text-red-500">*</span>
+                        PAN Card Number <span class="text-red-500"></span>
                     </label>
                     <input 
                         type="text" 
@@ -353,7 +354,7 @@
                         placeholder="ABCDE1234F"
                         pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}"
                         maxlength="10"
-                        required
+                        
                     >
                     <p class="text-xs text-gray-500 mt-1">Format: ABCDE1234F</p>
                 </div>
@@ -361,7 +362,7 @@
                 <!-- RERA Registration -->
                 <div class="mb-6">
                     <label for="reraReg" class="block text-gray-700 font-semibold mb-2">
-                        RERA Registration No <span class="text-red-500">*</span>
+                        RERA Registration No <span class="text-red-500"></span>
                     </label>
                     <input 
                         type="text" 
@@ -369,14 +370,14 @@
                         name="reraReg"
                         class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:outline-none input-focus uppercase" 
                         placeholder="Enter RERA registration number"
-                        required
+                        
                     >
                 </div>
 
                 <!-- GST Number -->
                 <div class="mb-6">
                     <label for="gstNo" class="block text-gray-700 font-semibold mb-2">
-                        GST Number <span class="text-red-500">*</span>
+                        GST Number <span class="text-red-500"></span>
                     </label>
                     <input 
                         type="text" 
@@ -386,7 +387,7 @@
                         placeholder="22AAAAA0000A1Z5"
                         pattern="[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}"
                         maxlength="15"
-                        required
+                        
                     >
                     <p class="text-xs text-gray-500 mt-1">Format: 22AAAAA0000A1Z5</p>
                 </div>
@@ -494,7 +495,7 @@
                 </div>
                 <button 
                     onclick="closeSupportModal()" 
-                    class="w-full py-2 px-4 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors"
+                    class="w-full py-2 px-4 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-slate-900 font-semibold font-medium rounded-lg transition-colors"
                 >
                     Got it
                 </button>
@@ -624,7 +625,7 @@
                     console.log(`Redirecting to: /partner/dashboard/${partner.partnerId || partner.email}`);
                     
                     // In production, uncomment:
-                    window.location.href = `../cp/index.html`;
+                    window.location.href = `../cp/leads.html`;
                     // window.location.href = `cp/index.html/${partner.partnerId || partner.email}`;
                     
                     // alert(`Login successful!\nPartner ID: ${partner.partnerId || 'NEW'}\nRedirecting to dashboard...`);
@@ -710,20 +711,8 @@
             
             console.log('New partner registered:', newPartner);
             
-            // Show success message
-            registerBtn.disabled = false;
-            registerText.textContent = 'Create Account';
-            registerSpinner.classList.remove('active');
-            registerArrow.classList.remove('hidden');
-            
-            showSuccess(`Registration successful! Your Partner ID is ${partnerId}. You can now login.`);
-            
-            // Reset form and switch to login tab after 3 seconds
-            setTimeout(() => {
-                document.getElementById('registerForm').reset();
-                switchTab('login');
-                document.getElementById('loginUsername').value = email;
-            }, 3000);
+            // Redirect to success page
+            window.location.href = 'register-success.html';
         }
 
         // Close modal when clicking outside
@@ -741,3 +730,4 @@
     </script>
 </body>
 </html>
+
