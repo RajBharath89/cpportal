@@ -496,6 +496,13 @@
             { id: 'LD008', name: 'Meera Iyer', email: 'meera.i@example.com', countryCode: '+91', phone: '9876543217', project: 'Asset Bliss', postedBy: 'Elite Builders (CP008)', postedOn: '2024-12-05', approvalStatus: 'rejected', approvedBy: 'Admin User' }
         ];
 
+        const currentCPManager = 'Jane Smith (CPM002)';
+        const assignedCPs = ['CP001', 'CP002'];
+
+        tableData = tableData.filter(row => {
+            const cpIdMatch = row.postedBy.match(/\((CP\d+)\)/);
+            return cpIdMatch && assignedCPs.includes(cpIdMatch[1]);
+        });
         let filteredData = [...tableData];
         let currentPage = 1;
         let recordsPerPage = 10;

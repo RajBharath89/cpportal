@@ -134,6 +134,18 @@
             background: #fef3c7;
             color: #92400e;
         }
+        .badge-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        .badge-approved {
+            background: #dcfce7;
+            color: #166534;
+        }
+        .badge-rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -328,6 +340,8 @@
                                 <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">PAN No</th>
                                 <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">GST No</th>
                                 <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
+                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Approval</th>
+                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Assigned CP Manager</th>
                                 <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Location</th>
                                 <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Address</th>
                                 <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Leads</th>
@@ -457,14 +471,14 @@
 
     <script>
         let tableData = [
-            { id: 'CP001', name: 'Rajesh Kumar', email: 'rajesh.k@example.com', phone: '+91 9876543210', type: 'individual', reraNo: 'RERA12345', panNo: 'ABCDE1234F', gstNo: '22AAAAA0000A1Z5', status: 'active', location: 'Bangalore', address: '123 MG Road, Bangalore', leadsSubmitted: 15 },
-            { id: 'CP002', name: 'ABC Realty Pvt Ltd', email: 'info@abcrealty.com', phone: '+91 9876543211', type: 'company', reraNo: 'RERA23456', panNo: 'BCDEF2345G', gstNo: '29BBBBB1111B2Z6', status: 'active', location: 'Mumbai', address: '456 Andheri West, Mumbai', leadsSubmitted: 42 },
-            { id: 'CP003', name: 'Priya Sharma', email: 'priya.s@example.com', phone: '+91 9876543212', type: 'individual', reraNo: 'RERA34567', panNo: 'CDEFG3456H', gstNo: '27CCCCC2222C3Z7', status: 'inactive', location: 'Pune', address: '789 Koregaon Park, Pune', leadsSubmitted: 8 },
-            { id: 'CP004', name: 'XYZ Properties', email: 'contact@xyzprop.com', phone: '+91 9876543213', type: 'company', reraNo: 'RERA45678', panNo: 'DEFGH4567I', gstNo: '07DDDDD3333D4Z8', status: 'active', location: 'Delhi', address: '321 Connaught Place, Delhi', leadsSubmitted: 67 },
-            { id: 'CP005', name: 'Arun Patel', email: 'arun.p@example.com', phone: '+91 9876543214', type: 'individual', reraNo: 'RERA56789', panNo: 'EFGHI5678J', gstNo: '24EEEEE4444E5Z9', status: 'active', location: 'Ahmedabad', address: '654 SG Highway, Ahmedabad', leadsSubmitted: 23 },
-            { id: 'CP006', name: 'Premium Estates', email: 'info@premiumestates.com', phone: '+91 9876543215', type: 'company', reraNo: 'RERA67890', panNo: 'FGHIJ6789K', gstNo: '33FFFFF5555F6Z0', status: 'inactive', location: 'Chennai', address: '987 Anna Nagar, Chennai', leadsSubmitted: 5 },
-            { id: 'CP007', name: 'Sneha Reddy', email: 'sneha.r@example.com', phone: '+91 9876543216', type: 'individual', reraNo: 'RERA78901', panNo: 'GHIJK7890L', gstNo: '36GGGGG6666G7Z1', status: 'active', location: 'Hyderabad', address: '159 Hitech City, Hyderabad', leadsSubmitted: 31 },
-            { id: 'CP008', name: 'Elite Builders', email: 'contact@elitebuilders.com', phone: '+91 9876543217', type: 'company', reraNo: 'RERA89012', panNo: 'HIJKL8901M', gstNo: '19HHHHH7777H8Z2', status: 'active', location: 'Kolkata', address: '753 Salt Lake, Kolkata', leadsSubmitted: 54 }
+            { id: 'CP001', name: 'Rajesh Kumar', email: 'rajesh.k@example.com', phone: '+91 9876543210', type: 'individual', reraNo: 'RERA12345', panNo: 'ABCDE1234F', gstNo: '22AAAAA0000A1Z5', status: 'active', location: 'Bangalore', address: '123 MG Road, Bangalore', leadsSubmitted: 15, approvalStatus: 'approved', assignedCPManager: 'Jane Smith (CPM002)' },
+            { id: 'CP002', name: 'ABC Realty Pvt Ltd', email: 'info@abcrealty.com', phone: '+91 9876543211', type: 'company', reraNo: 'RERA23456', panNo: 'BCDEF2345G', gstNo: '29BBBBB1111B2Z6', status: 'active', location: 'Mumbai', address: '456 Andheri West, Mumbai', leadsSubmitted: 42, approvalStatus: 'approved', assignedCPManager: 'Jane Smith (CPM002)' },
+            { id: 'CP003', name: 'Priya Sharma', email: 'priya.s@example.com', phone: '+91 9876543212', type: 'individual', reraNo: 'RERA34567', panNo: 'CDEFG3456H', gstNo: '27CCCCC2222C3Z7', status: 'inactive', location: 'Pune', address: '789 Koregaon Park, Pune', leadsSubmitted: 8, approvalStatus: 'rejected', assignedCPManager: '' },
+            { id: 'CP004', name: 'XYZ Properties', email: 'contact@xyzprop.com', phone: '+91 9876543213', type: 'company', reraNo: 'RERA45678', panNo: 'DEFGH4567I', gstNo: '07DDDDD3333D4Z8', status: 'active', location: 'Delhi', address: '321 Connaught Place, Delhi', leadsSubmitted: 67, approvalStatus: 'approved', assignedCPManager: 'David Brown (CPM005)' },
+            { id: 'CP005', name: 'Arun Patel', email: 'arun.p@example.com', phone: '+91 9876543214', type: 'individual', reraNo: 'RERA56789', panNo: 'EFGHI5678J', gstNo: '24EEEEE4444E5Z9', status: 'active', location: 'Ahmedabad', address: '654 SG Highway, Ahmedabad', leadsSubmitted: 23, approvalStatus: 'pending', assignedCPManager: '' },
+            { id: 'CP006', name: 'Premium Estates', email: 'info@premiumestates.com', phone: '+91 9876543215', type: 'company', reraNo: 'RERA67890', panNo: 'FGHIJ6789K', gstNo: '33FFFFF5555F6Z0', status: 'inactive', location: 'Chennai', address: '987 Anna Nagar, Chennai', leadsSubmitted: 5, approvalStatus: 'pending', assignedCPManager: '' },
+            { id: 'CP007', name: 'Sneha Reddy', email: 'sneha.r@example.com', phone: '+91 9876543216', type: 'individual', reraNo: 'RERA78901', panNo: 'GHIJK7890L', gstNo: '36GGGGG6666G7Z1', status: 'active', location: 'Hyderabad', address: '159 Hitech City, Hyderabad', leadsSubmitted: 31, approvalStatus: 'approved', assignedCPManager: 'Lisa Anderson (CPM008)' },
+            { id: 'CP008', name: 'Elite Builders', email: 'contact@elitebuilders.com', phone: '+91 9876543217', type: 'company', reraNo: 'RERA89012', panNo: 'HIJKL8901M', gstNo: '19HHHHH7777H8Z2', status: 'active', location: 'Kolkata', address: '753 Salt Lake, Kolkata', leadsSubmitted: 54, approvalStatus: 'approved', assignedCPManager: 'David Brown (CPM005)' }
         ];
 
         let filteredData = [...tableData];
@@ -481,7 +495,7 @@
             tbody.innerHTML = '';
             
             if (filteredData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="13" class="px-6 py-8 text-center text-gray-500">No records found</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="15" class="px-6 py-8 text-center text-gray-500">No records found</td></tr>';
                 updatePagination();
                 updateStats();
                 return;
@@ -512,6 +526,12 @@
                             ${row.status.charAt(0).toUpperCase() + row.status.slice(1)}
                         </span>
                     </td>
+                    <td class="px-4 py-4">
+                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ${row.approvalStatus === 'approved' ? 'badge-approved' : row.approvalStatus === 'rejected' ? 'badge-rejected' : 'badge-pending'}">
+                            ${row.approvalStatus.charAt(0).toUpperCase() + row.approvalStatus.slice(1)}
+                        </span>
+                    </td>
+                    <td class="px-4 py-4 text-sm text-gray-600">${row.assignedCPManager || '<span class="text-gray-400 italic">Not Assigned</span>'}</td>
                     <td class="px-4 py-4 text-sm text-gray-600">${row.location}</td>
                     <td class="px-4 py-4 text-sm text-gray-600 max-w-xs truncate" title="${row.address}">${row.address}</td>
                     <td class="px-4 py-4 text-sm text-center">

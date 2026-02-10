@@ -134,6 +134,18 @@
             background: #fef3c7;
             color: #92400e;
         }
+        .badge-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        .badge-approved {
+            background: #dcfce7;
+            color: #166534;
+        }
+        .badge-rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -254,12 +266,12 @@
                     </div>
                 </div>
                 <div class="bg-white rounded-lg shadow p-4 flex items-center gap-4">
-                    <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
-                        <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                    <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+                        <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
                     </div>
                     <div>
-                        <p class="text-sm text-gray-500">Total Leads</p>
-                        <p class="text-2xl font-bold text-yellow-600" id="stat-leads">0</p>
+                        <p class="text-sm text-gray-500">Pending Approval</p>
+                        <p class="text-2xl font-bold text-orange-600" id="stat-pending">0</p>
                     </div>
                 </div>
             </div>
@@ -310,6 +322,19 @@
                             <option value="company">Company</option>
                         </select>
                     </div>
+                    
+                    <div class="w-full md:w-48">
+                        <select 
+                            id="approvalFilter"
+                            onchange="filterTable()"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500"
+                        >
+                            <option value="">All Approval</option>
+                            <option value="pending">Pending</option>
+                            <option value="approved">Approved</option>
+                            <option value="rejected">Rejected</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
@@ -328,6 +353,8 @@
                                 <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">PAN No</th>
                                 <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">GST No</th>
                                 <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
+                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Approval</th>
+                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Assigned CP Manager</th>
                                 <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Location</th>
                                 <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Address</th>
                                 <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Leads</th>
@@ -437,6 +464,13 @@
                         </select>
                     </div>
                     
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Assign CP Manager</label>
+                        <select id="assignedCPManager" name="assignedCPManager" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500">
+                            <option value="">Select Manager</option>
+                        </select>
+                    </div>
+                    
                     <div class="md:col-span-2">
                         <label class="block text-sm font-semibold text-gray-700 mb-2">Address <span class="text-red-500">*</span></label>
                         <textarea id="address" name="address" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500" required></textarea>
@@ -457,14 +491,22 @@
 
     <script>
         let tableData = [
-            { id: 'CP001', name: 'Rajesh Kumar', email: 'rajesh.k@example.com', phone: '+91 9876543210', type: 'individual', reraNo: 'RERA12345', panNo: 'ABCDE1234F', gstNo: '22AAAAA0000A1Z5', status: 'active', location: 'Bangalore', address: '123 MG Road, Bangalore', leadsSubmitted: 15 },
-            { id: 'CP002', name: 'ABC Realty Pvt Ltd', email: 'info@abcrealty.com', phone: '+91 9876543211', type: 'company', reraNo: 'RERA23456', panNo: 'BCDEF2345G', gstNo: '29BBBBB1111B2Z6', status: 'active', location: 'Mumbai', address: '456 Andheri West, Mumbai', leadsSubmitted: 42 },
-            { id: 'CP003', name: 'Priya Sharma', email: 'priya.s@example.com', phone: '+91 9876543212', type: 'individual', reraNo: 'RERA34567', panNo: 'CDEFG3456H', gstNo: '27CCCCC2222C3Z7', status: 'inactive', location: 'Pune', address: '789 Koregaon Park, Pune', leadsSubmitted: 8 },
-            { id: 'CP004', name: 'XYZ Properties', email: 'contact@xyzprop.com', phone: '+91 9876543213', type: 'company', reraNo: 'RERA45678', panNo: 'DEFGH4567I', gstNo: '07DDDDD3333D4Z8', status: 'active', location: 'Delhi', address: '321 Connaught Place, Delhi', leadsSubmitted: 67 },
-            { id: 'CP005', name: 'Arun Patel', email: 'arun.p@example.com', phone: '+91 9876543214', type: 'individual', reraNo: 'RERA56789', panNo: 'EFGHI5678J', gstNo: '24EEEEE4444E5Z9', status: 'active', location: 'Ahmedabad', address: '654 SG Highway, Ahmedabad', leadsSubmitted: 23 },
-            { id: 'CP006', name: 'Premium Estates', email: 'info@premiumestates.com', phone: '+91 9876543215', type: 'company', reraNo: 'RERA67890', panNo: 'FGHIJ6789K', gstNo: '33FFFFF5555F6Z0', status: 'inactive', location: 'Chennai', address: '987 Anna Nagar, Chennai', leadsSubmitted: 5 },
-            { id: 'CP007', name: 'Sneha Reddy', email: 'sneha.r@example.com', phone: '+91 9876543216', type: 'individual', reraNo: 'RERA78901', panNo: 'GHIJK7890L', gstNo: '36GGGGG6666G7Z1', status: 'active', location: 'Hyderabad', address: '159 Hitech City, Hyderabad', leadsSubmitted: 31 },
-            { id: 'CP008', name: 'Elite Builders', email: 'contact@elitebuilders.com', phone: '+91 9876543217', type: 'company', reraNo: 'RERA89012', panNo: 'HIJKL8901M', gstNo: '19HHHHH7777H8Z2', status: 'active', location: 'Kolkata', address: '753 Salt Lake, Kolkata', leadsSubmitted: 54 }
+            { id: 'CP001', name: 'Rajesh Kumar', email: 'rajesh.k@example.com', phone: '+91 9876543210', type: 'individual', reraNo: 'RERA12345', panNo: 'ABCDE1234F', gstNo: '22AAAAA0000A1Z5', status: 'active', location: 'Bangalore', address: '123 MG Road, Bangalore', leadsSubmitted: 15, approvalStatus: 'approved', assignedCPManager: 'Jane Smith (CPM002)' },
+            { id: 'CP002', name: 'ABC Realty Pvt Ltd', email: 'info@abcrealty.com', phone: '+91 9876543211', type: 'company', reraNo: 'RERA23456', panNo: 'BCDEF2345G', gstNo: '29BBBBB1111B2Z6', status: 'active', location: 'Mumbai', address: '456 Andheri West, Mumbai', leadsSubmitted: 42, approvalStatus: 'approved', assignedCPManager: 'Jane Smith (CPM002)' },
+            { id: 'CP003', name: 'Priya Sharma', email: 'priya.s@example.com', phone: '+91 9876543212', type: 'individual', reraNo: 'RERA34567', panNo: 'CDEFG3456H', gstNo: '27CCCCC2222C3Z7', status: 'inactive', location: 'Pune', address: '789 Koregaon Park, Pune', leadsSubmitted: 8, approvalStatus: 'rejected', assignedCPManager: '' },
+            { id: 'CP004', name: 'XYZ Properties', email: 'contact@xyzprop.com', phone: '+91 9876543213', type: 'company', reraNo: 'RERA45678', panNo: 'DEFGH4567I', gstNo: '07DDDDD3333D4Z8', status: 'active', location: 'Delhi', address: '321 Connaught Place, Delhi', leadsSubmitted: 67, approvalStatus: 'approved', assignedCPManager: 'David Brown (CPM005)' },
+            { id: 'CP005', name: 'Arun Patel', email: 'arun.p@example.com', phone: '+91 9876543214', type: 'individual', reraNo: 'RERA56789', panNo: 'EFGHI5678J', gstNo: '24EEEEE4444E5Z9', status: 'active', location: 'Ahmedabad', address: '654 SG Highway, Ahmedabad', leadsSubmitted: 23, approvalStatus: 'pending', assignedCPManager: '' },
+            { id: 'CP006', name: 'Premium Estates', email: 'info@premiumestates.com', phone: '+91 9876543215', type: 'company', reraNo: 'RERA67890', panNo: 'FGHIJ6789K', gstNo: '33FFFFF5555F6Z0', status: 'inactive', location: 'Chennai', address: '987 Anna Nagar, Chennai', leadsSubmitted: 5, approvalStatus: 'pending', assignedCPManager: '' },
+            { id: 'CP007', name: 'Sneha Reddy', email: 'sneha.r@example.com', phone: '+91 9876543216', type: 'individual', reraNo: 'RERA78901', panNo: 'GHIJK7890L', gstNo: '36GGGGG6666G7Z1', status: 'active', location: 'Hyderabad', address: '159 Hitech City, Hyderabad', leadsSubmitted: 31, approvalStatus: 'approved', assignedCPManager: 'Lisa Anderson (CPM008)' },
+            { id: 'CP008', name: 'Elite Builders', email: 'contact@elitebuilders.com', phone: '+91 9876543217', type: 'company', reraNo: 'RERA89012', panNo: 'HIJKL8901M', gstNo: '19HHHHH7777H8Z2', status: 'active', location: 'Kolkata', address: '753 Salt Lake, Kolkata', leadsSubmitted: 54, approvalStatus: 'approved', assignedCPManager: 'David Brown (CPM005)' }
+        ];
+
+        const cpManagersList = [
+            { id: 'CPM002', name: 'Jane Smith' },
+            { id: 'CPM003', name: 'Mike Johnson' },
+            { id: 'CPM005', name: 'David Brown' },
+            { id: 'CPM006', name: 'Emily Davis' },
+            { id: 'CPM008', name: 'Lisa Anderson' }
         ];
 
         let filteredData = [...tableData];
@@ -481,7 +523,7 @@
             tbody.innerHTML = '';
             
             if (filteredData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="13" class="px-6 py-8 text-center text-gray-500">No records found</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="15" class="px-6 py-8 text-center text-gray-500">No records found</td></tr>';
                 updatePagination();
                 updateStats();
                 return;
@@ -512,6 +554,12 @@
                             ${row.status.charAt(0).toUpperCase() + row.status.slice(1)}
                         </span>
                     </td>
+                    <td class="px-4 py-4">
+                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ${row.approvalStatus === 'approved' ? 'badge-approved' : row.approvalStatus === 'rejected' ? 'badge-rejected' : 'badge-pending'}">
+                            ${row.approvalStatus.charAt(0).toUpperCase() + row.approvalStatus.slice(1)}
+                        </span>
+                    </td>
+                    <td class="px-4 py-4 text-sm text-gray-600">${row.assignedCPManager || '<span class="text-gray-400 italic">Not Assigned</span>'}</td>
                     <td class="px-4 py-4 text-sm text-gray-600">${row.location}</td>
                     <td class="px-4 py-4 text-sm text-gray-600 max-w-xs truncate" title="${row.address}">${row.address}</td>
                     <td class="px-4 py-4 text-sm text-center">
@@ -523,13 +571,52 @@
                                 <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/>
                             </svg>
                         </button>
-                        <div id="actionMenu${index}" class="action-menu absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10">
+                        <div id="actionMenu${index}" class="action-menu absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10">
                             <button onclick="editRecord(${tableData.indexOf(row)})" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
                                 <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                 </svg>
                                 Edit
                             </button>
+                            <hr class="my-1">
+                            ${row.approvalStatus === 'pending' ? `
+                            <button onclick="handleAction('approve', ${tableData.indexOf(row)})" class="w-full text-left px-4 py-2 text-sm text-green-700 hover:bg-green-50 flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                Approve
+                            </button>
+                            <button onclick="handleAction('reject', ${tableData.indexOf(row)})" class="w-full text-left px-4 py-2 text-sm text-red-700 hover:bg-red-50 flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                Reject
+                            </button>
+                            <hr class="my-1">
+                            ` : row.approvalStatus === 'approved' ? `
+                            <button onclick="handleAction('reject', ${tableData.indexOf(row)})" class="w-full text-left px-4 py-2 text-sm text-red-700 hover:bg-red-50 flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                Reject
+                            </button>
+                            <hr class="my-1">
+                            ` : `
+                            <button onclick="handleAction('approve', ${tableData.indexOf(row)})" class="w-full text-left px-4 py-2 text-sm text-green-700 hover:bg-green-50 flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                Approve
+                            </button>
+                            <hr class="my-1">
+                            `}
+                            <div class="px-4 py-2">
+                                <label class="block text-xs font-semibold text-gray-500 mb-1">Assign CP Manager</label>
+                                <select onchange="assignCPManager(${tableData.indexOf(row)}, this.value)" class="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:border-green-500">
+                                    <option value="">Select Manager</option>
+                                    ${cpManagersList.map(m => `<option value="${m.name} (${m.id})" ${row.assignedCPManager === m.name + ' (' + m.id + ')' ? 'selected' : ''}>${m.name}</option>`).join('')}
+                                </select>
+                            </div>
                             <hr class="my-1">
                             ${row.status === 'active' ? 
                                 `<button onclick="handleAction('deactivate', ${tableData.indexOf(row)})" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
@@ -588,12 +675,12 @@
             const total = filteredData.length;
             const active = filteredData.filter(r => r.status === 'active').length;
             const inactive = filteredData.filter(r => r.status === 'inactive').length;
-            const leads = filteredData.reduce((sum, r) => sum + (r.leadsSubmitted || 0), 0);
+            const pending = filteredData.filter(r => r.approvalStatus === 'pending').length;
             
             document.getElementById('stat-total').textContent = total;
             document.getElementById('stat-active').textContent = active;
             document.getElementById('stat-inactive').textContent = inactive;
-            document.getElementById('stat-leads').textContent = leads;
+            document.getElementById('stat-pending').textContent = pending;
         }
 
         function previousPage() {
@@ -626,6 +713,7 @@
             const searchInput = document.getElementById('searchInput').value.toLowerCase();
             const statusFilter = document.getElementById('statusFilter').value.toLowerCase();
             const typeFilter = document.getElementById('typeFilter').value.toLowerCase();
+            const approvalFilter = document.getElementById('approvalFilter').value.toLowerCase();
             
             filteredData = tableData.filter(row => {
                 const matchesSearch = !searchInput || 
@@ -637,8 +725,9 @@
                     
                 const matchesStatus = !statusFilter || row.status === statusFilter;
                 const matchesType = !typeFilter || row.type === typeFilter;
+                const matchesApproval = !approvalFilter || row.approvalStatus === approvalFilter;
                 
-                return matchesSearch && matchesStatus && matchesType;
+                return matchesSearch && matchesStatus && matchesType && matchesApproval;
             });
             
             currentPage = 1;
@@ -672,7 +761,13 @@
         function handleAction(action, index) {
             const item = tableData[index];
             
-            if (action === 'activate') {
+            if (action === 'approve') {
+                tableData[index].approvalStatus = 'approved';
+                alert(`${item.name} has been approved`);
+            } else if (action === 'reject') {
+                tableData[index].approvalStatus = 'rejected';
+                alert(`${item.name} has been rejected`);
+            } else if (action === 'activate') {
                 tableData[index].status = 'active';
                 alert(`${item.name} has been activated`);
             } else if (action === 'deactivate') {
@@ -680,6 +775,14 @@
                 alert(`${item.name} has been deactivated`);
             }
             
+            filterTable();
+        }
+
+        function assignCPManager(index, value) {
+            tableData[index].assignedCPManager = value;
+            if (value) {
+                alert(`${tableData[index].name} has been assigned to ${value}`);
+            }
             filterTable();
         }
 
@@ -699,6 +802,7 @@
             document.getElementById('gstNo').value = record.gstNo;
             document.getElementById('location').value = record.location;
             document.getElementById('status').value = record.status;
+            document.getElementById('assignedCPManager').value = record.assignedCPManager || '';
             document.getElementById('address').value = record.address;
             
             openAddModal();
@@ -732,7 +836,8 @@
                 gstNo: formData.get('gstNo'),
                 location: formData.get('location'),
                 status: formData.get('status'),
-                address: formData.get('address')
+                address: formData.get('address'),
+                assignedCPManager: formData.get('assignedCPManager')
             };
             
             if (editIndex !== '') {
@@ -746,7 +851,8 @@
                 const newEntry = {
                     id: 'CP' + String(tableData.length + 1).padStart(3, '0'),
                     ...entry,
-                    leadsSubmitted: 0
+                    leadsSubmitted: 0,
+                    approvalStatus: 'pending'
                 };
                 tableData.unshift(newEntry);
                 alert('Channel Partner added successfully!');
@@ -776,6 +882,17 @@
                 closeAddModal();
             }
         });
+
+        function populateCPManagerDropdown() {
+            const select = document.getElementById('assignedCPManager');
+            cpManagersList.forEach(m => {
+                const option = document.createElement('option');
+                option.value = m.name + ' (' + m.id + ')';
+                option.textContent = m.name;
+                select.appendChild(option);
+            });
+        }
+        populateCPManagerDropdown();
 
         renderTable();
     </script>
