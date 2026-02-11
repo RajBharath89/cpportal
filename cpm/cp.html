@@ -67,17 +67,21 @@
             transform: translateY(0);
         }
         
-        .action-menu {
-            display: none;
-            opacity: 0;
-            transform: translateY(-10px);
-            transition: all 0.3s ease;
+        .action-icons {
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
-        
-        .action-menu.active {
-            display: block;
-            opacity: 1;
-            transform: translateY(0);
+        .action-icons button {
+            padding: 5px;
+            border-radius: 6px;
+            transition: background 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .action-icons button:hover {
+            background: #f3f4f6;
         }
         
         .modal {
@@ -319,20 +323,20 @@
                     <table class="w-full">
                         <thead class="bg-gray-50 border-b border-gray-200 sticky top-0">
                             <tr>
-                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">ID</th>
-                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Name</th>
-                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Email</th>
-                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Phone</th>
-                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Type</th>
-                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">RERA No</th>
-                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">PAN No</th>
-                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">GST No</th>
-                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
-                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Assigned CP Manager</th>
-                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Location</th>
-                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Address</th>
-                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Leads</th>
-                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Action</th>
+                                <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">ID</th>
+                                <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Name</th>
+                                <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Email</th>
+                                <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Phone</th>
+                                <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Type</th>
+                                <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">RERA No</th>
+                                <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">PAN No</th>
+                                <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">GST No</th>
+                                <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
+                                <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Assigned CP Manager</th>
+                                <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Location</th>
+                                <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Address</th>
+                                <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Leads</th>
+                                <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Action</th>
                             </tr>
                         </thead>
                         <tbody id="tableBody" class="divide-y divide-gray-200">
@@ -522,32 +526,23 @@
                     <td class="px-4 py-4 text-sm text-center">
                         <span class="inline-flex items-center justify-center text-blue-700 font-semibold ">${row.leadsSubmitted}</span>
                     </td>
-                    <td class="px-4 py-4 text-sm relative">
-                        <button onclick="toggleActionMenu(${index})" class="text-gray-500 hover:text-gray-700">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/>
-                            </svg>
-                        </button>
-                        <div id="actionMenu${index}" class="action-menu absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10">
-                            <button onclick="editRecord(${tableData.indexOf(row)})" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
-                                <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <td class="px-4 py-4 text-sm">
+                        <div class="action-icons">
+                            <button onclick="editRecord(${tableData.indexOf(row)})" title="Edit" class="text-blue-600 hover:text-blue-800">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                 </svg>
-                                Edit
                             </button>
-                            <hr class="my-1">
                             ${row.status === 'active' ? 
-                                `<button onclick="handleAction('deactivate', ${tableData.indexOf(row)})" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
-                                    <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                `<button onclick="handleAction('deactivate', ${tableData.indexOf(row)})" title="Deactivate" class="text-orange-500 hover:text-orange-700">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                     </svg>
-                                    Deactivate
                                 </button>` : 
-                                `<button onclick="handleAction('activate', ${tableData.indexOf(row)})" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
-                                    <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                `<button onclick="handleAction('activate', ${tableData.indexOf(row)})" title="Activate" class="text-green-600 hover:text-green-800">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                     </svg>
-                                    Activate
                                 </button>`
                             }
                         </div>
@@ -666,14 +661,6 @@
             element.classList.add('active');
         }
 
-        function toggleActionMenu(index) {
-            const menu = document.getElementById(`actionMenu${index}`);
-            document.querySelectorAll('.action-menu').forEach(m => {
-                if (m !== menu) m.classList.remove('active');
-            });
-            menu.classList.toggle('active');
-        }
-
         function handleAction(action, index) {
             const item = tableData[index];
             
@@ -770,7 +757,7 @@
 
         document.addEventListener('click', function(event) {
             if (!event.target.closest('.relative')) {
-                document.querySelectorAll('.dropdown-menu, .action-menu').forEach(menu => {
+                document.querySelectorAll('.dropdown-menu').forEach(menu => {
                     menu.classList.remove('active');
                 });
             }

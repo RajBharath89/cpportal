@@ -19,14 +19,20 @@
         
         .main-wrapper {
             display: flex;
-            height: calc(100vh - 64px);
-            margin-top: 64px;
+            height: calc(100vh - 68px);
+            margin-top: 68px;
         }
         
         .main-content {
             flex: 1;
             overflow-y: auto;
-            padding: 1rem 2rem;
+            padding: 1rem;
+        }
+        
+        @media (min-width: 768px) {
+            .main-content {
+                padding: 2rem 2rem 1rem 2rem;
+            }
         }
         
         .table-container {
@@ -34,24 +40,13 @@
         }
         
         .table-scroll {
-            overflow-y: auto;
-            max-height: calc(100vh - 450px);
+            overflow-x: auto;
+            overflow-y: visible;
+            -webkit-overflow-scrolling: touch;
         }
         
-        .sidebar {
-            transition: transform 0.3s ease;
-            height: 100vh;
-            overflow-y: auto;
-        }
-        
-        .sidebar-hidden {
-            transform: translateX(-100%);
-        }
-        
-        @media (min-width: 768px) {
-            .sidebar-hidden {
-                transform: translateX(0);
-            }
+        .table-scroll table {
+            min-width: 1000px;
         }
         
         .dropdown-menu {
@@ -102,17 +97,18 @@
         
         .nav-item {
             transition: all 0.3s ease;
+            position: relative;
+            border-bottom: 3px solid transparent;
         }
         
         .nav-item:hover {
-            background: #f0f9e8;
             color: #95c13d;
+            border-bottom-color: #95c13d;
         }
         
         .nav-item.active {
-            background: #f0f9e8;
             color: #95c13d;
-            border-left: 4px solid #95c13d;
+            border-bottom-color: #95c13d;
         }
         
         .badge-active {
@@ -124,35 +120,97 @@
             background: #fee2e2;
             color: #991b1b;
         }
+        
+        .badge-approved {
+            background: #dcfce7;
+            color: #166534;
+        }
+        
+        .badge-rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .action-icons {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 9999;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
     </style>
 </head>
 <body class="bg-gray-50">
     <!-- Top Header -->
     <header class="bg-gray-800 shadow-sm fixed top-0 left-0 right-0 z-40 border-t-4" style="border-top-color: #95c13d;">
         <div class="flex items-center justify-between px-4 py-3">
-            <!-- Logo and Mobile Menu -->
-            <div class="flex items-center gap-4">
-                <button onclick="toggleSidebar()" class="md:hidden text-white hover:text-gray-300">
+            <!-- Mobile Menu Button and Logo -->
+            <div class="flex items-center gap-3">
+                <button onclick="toggleMobileMenu()" class="md:hidden text-white hover:text-gray-300">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                     </svg>
                 </button>
+                
+                <!-- Logo -->
                 <div class="flex items-center text-white">
-                    <img src="https://coevolvegroup.com/assets/images/logos/primary-logo.png" alt="CoEvolve Logo" class="h-10 mr-3">
-                    <span class="font-semibold">Admin</span>
+                    <img src="https://coevolvegroup.com/assets/images/logos/primary-logo.png" alt="CoEvolve Logo" class="h-8 md:h-10 mr-2 md:mr-3">
+                    <span class="font-semibold text-sm md:text-base">Admin</span>
                 </div>
             </div>
 
+            <!-- Navigation Bar - Hidden on mobile -->
+            <nav class="hidden md:flex items-center space-x-1">
+                <a href="cphead.html" class="nav-item flex items-center gap-2 px-4 py-2 text-gray-200 font-medium text-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                    </svg>
+                    CP Heads
+                </a>
+                
+                <a href="cpm.html" class="nav-item active flex items-center gap-2 px-4 py-2 text-gray-200 font-medium text-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                    </svg>
+                    CP Managers
+                </a>
+                
+                <a href="cp.html" class="nav-item flex items-center gap-2 px-4 py-2 text-gray-200 font-medium text-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                    Channel Partners
+                </a>
+                
+                <a href="leads.html" class="nav-item flex items-center gap-2 px-4 py-2 text-gray-200 font-medium text-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    </svg>
+                    Leads
+                </a>
+            </nav>
+
             <!-- User Avatar -->
             <div class="relative">
-                <button onclick="toggleUserMenu()" class="flex items-center gap-2 hover:bg-gray-900 rounded-lg px-3 py-2 transition-colors">
-                    <div class="w-9 h-9 rounded-full flex items-center justify-center text-white font-semibold" style="background-color: #95c13d;">
+                <button onclick="toggleUserMenu()" class="flex items-center gap-2 hover:bg-gray-900 rounded-lg px-2 md:px-3 py-2 transition-colors">
+                    <div class="w-8 h-8 md:w-9 md:h-9 rounded-full flex items-center justify-center text-white font-semibold text-sm" style="background-color: #95c13d;">
                         AU
                     </div>
-                    <div class="hidden md:block text-left">
+                    <div class="hidden lg:block text-left">
                         <div class="text-sm font-semibold text-gray-100">Admin User</div>
                     </div>
-                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 text-gray-400 hidden md:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                     </svg>
                 </button>
@@ -168,155 +226,194 @@
                 </div>
             </div>
         </div>
-    </header>
-
-    <div class="main-wrapper">
-        <!-- Sidebar -->
-        <aside id="sidebar" class="sidebar fixed left-0 top-16 bottom-0 w-64 bg-white shadow-lg z-30 md:translate-x-0 sidebar-hidden">
-            <nav class="p-4 space-y-1 mt-4">
-                <a href="cphead.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 font-medium">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        
+        <!-- Mobile Navigation Menu -->
+        <div id="mobileMenu" class="md:hidden hidden bg-gray-700 border-t border-gray-600">
+            <nav class="px-4 py-2 space-y-1">
+                <a href="cphead.html" class="flex items-center gap-2 px-3 py-2 text-gray-200 font-medium text-sm hover:bg-gray-600 rounded">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
                     </svg>
                     CP Heads
                 </a>
                 
-                <a href="cpm.html" class="nav-item active flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 font-medium">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <a href="cpm.html" class="flex items-center gap-2 px-3 py-2 text-gray-200 font-medium text-sm bg-gray-600 rounded">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
                     </svg>
                     CP Managers
                 </a>
-                <a href="cp.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 font-medium">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                
+                <a href="cp.html" class="flex items-center gap-2 px-3 py-2 text-gray-200 font-medium text-sm hover:bg-gray-600 rounded">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
                     </svg>
                     Channel Partners
                 </a>
-                <a href="leads.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 font-medium">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                
+                <a href="leads.html" class="flex items-center gap-2 px-3 py-2 text-gray-200 font-medium text-sm hover:bg-gray-600 rounded">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                     </svg>
                     Leads
                 </a>
             </nav>
-        </aside>
+        </div>
+    </header>
 
+    <div class="main-wrapper">
         <!-- Main Content -->
-        <main class="main-content md:ml-64">
-            <!-- Title and Add Button -->
-            <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 mt-6 gap-4">
-                <h1 class="text-2xl md:text-3xl font-bold text-gray-900">CP Managers</h1>
-                <button onclick="openAddModal()" class="flex items-center justify-center gap-2 px-6 py-3 font-semibold rounded-full transition-all" style="background: linear-gradient(135deg, #95c13d 0%, #7ba82d 100%); color: #ffffff;" onmouseover="this.style.background='linear-gradient(135deg, #a8d955 0%, #98c945 100%)'; this.style.transform='scale(1.02)';" onmouseout="this.style.background='linear-gradient(135deg, #95c13d 0%, #7ba82d 100%)'; this.style.transform='scale(1)';">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <main class="main-content">
+             <!-- Title and Stats Row -->
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4 md:mb-6 gap-3 md:gap-4">
+                <div class="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
+                    <h1 class="text-xl md:text-2xl font-bold text-gray-900">CP Managers</h1>
+                    <div class="flex items-center gap-2 md:gap-3 text-xs md:text-sm text-gray-600">
+                        <span>Total: <span class="font-semibold text-gray-900" id="stat-total">0</span></span>
+                        <span class="text-gray-300">|</span>
+                        <span>Active: <span class="font-semibold text-green-600" id="stat-active">0</span></span>
+                        <span class="text-gray-300">|</span>
+                        <span>Inactive: <span class="font-semibold text-red-600" id="stat-inactive">0</span></span>
+                    </div>
+                </div>
+                
+                <button onclick="openAddModal()" class="flex items-center justify-center gap-2 px-4 md:px-5 py-2 font-semibold rounded-full transition-all text-xs md:text-sm whitespace-nowrap w-full md:w-auto" style="background: linear-gradient(135deg, #95c13d 0%, #7ba82d 100%); color: #ffffff;" onmouseover="this.style.background='linear-gradient(135deg, #a8d955 0%, #98c945 100%)'; this.style.transform='scale(1.02)';" onmouseout="this.style.background='linear-gradient(135deg, #95c13d 0%, #7ba82d 100%)'; this.style.transform='scale(1)';">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                     </svg>
                     Add CP Manager
                 </button>
             </div>
 
-            <!-- Stats Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                <div class="bg-white rounded-lg shadow p-4 flex items-center gap-4">
-                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500">Total CP Managers</p>
-                        <p class="text-2xl font-bold text-gray-900" id="stat-total">0</p>
-                    </div>
-                </div>
-                <div class="bg-white rounded-lg shadow p-4 flex items-center gap-4">
-                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500">Active</p>
-                        <p class="text-2xl font-bold text-green-600" id="stat-active">0</p>
-                    </div>
-                </div>
-                <div class="bg-white rounded-lg shadow p-4 flex items-center gap-4">
-                    <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
-                        <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500">Inactive</p>
-                        <p class="text-2xl font-bold text-red-600" id="stat-inactive">0</p>
-                    </div>
-                </div>
-                <!-- <div class="bg-white rounded-lg shadow p-4 flex items-center gap-4">
-                    <div class="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center">
-                        <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500">CP Heads</p>
-                        <p class="text-2xl font-bold text-indigo-600" id="stat-heads">0</p>
-                    </div>
-                </div> -->
-            </div>
-
-            <!-- Search and Filters -->
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <!-- Search -->
-                    <div class="lg:col-span-2">
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                                </svg>
-                            </div>
-                            <input 
-                                type="text" 
-                                id="searchInput"
-                                onkeyup="filterTable()"
-                                class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500" 
-                                placeholder="Search by name, email, phone, designation..."
-                            >
-                        </div>
-                    </div>
-                    
-                    <!-- Reports to Head Filter -->
-                    <div class="w-full">
-                        <select 
-                            id="reportsToFilter"
-                            onchange="filterTable()"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500"
-                        >
-                            <option value="">All Reports To</option>
-                        </select>
-                    </div>
-                    
-                    <!-- Status Filter -->
-                    <div class="w-full">
-                        <select 
-                            id="statusFilter"
-                            onchange="filterTable()"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500"
-                        >
-                            <option value="">All Status</option>
-                            <option value="active">Active</option>
-                            <option value="inactive">Inactive</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-
             <!-- Data Table -->
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden table-container">
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                <div class="px-3 md:px-4 py-3 border-b border-gray-200">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <!-- Search Bar -->
+                        <div class="w-full md:flex-1 md:min-w-[250px]">
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                    </svg>
+                                </div>
+                                <input 
+                                    type="text" 
+                                    id="searchInput"
+                                    onkeyup="filterTable()"
+                                    class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500 text-sm" 
+                                    placeholder="Search by name, email, phone..."
+                                >
+                            </div>
+                        </div>
+                        
+                        <!-- Status Filter -->
+                        <div class="w-[48%] md:w-auto md:min-w-[140px] relative">
+                            <button 
+                                type="button"
+                                onclick="toggleDropdown('statusDropdown')"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500 text-sm text-left flex items-center justify-between bg-white"
+                            >
+                                <span id="statusFilterLabel" class="truncate">All Status</span>
+                                <svg class="w-4 h-4 text-gray-400 ml-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </button>
+                            <div id="statusDropdown" class="dropdown-menu absolute z-50 mt-1 w-48 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                                <div class="p-2">
+                                    <label class="flex items-center px-3 py-2 hover:bg-gray-50 rounded cursor-pointer">
+                                        <input type="checkbox" value="active" onchange="updateStatusFilter()" class="status-checkbox w-4 h-4 text-green-600 rounded">
+                                        <span class="ml-2 text-sm text-gray-700 whitespace-nowrap">Active</span>
+                                    </label>
+                                    <label class="flex items-center px-3 py-2 hover:bg-gray-50 rounded cursor-pointer">
+                                        <input type="checkbox" value="inactive" onchange="updateStatusFilter()" class="status-checkbox w-4 h-4 text-green-600 rounded">
+                                        <span class="ml-2 text-sm text-gray-700 whitespace-nowrap">Inactive</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Date Range Filter -->
+                        <div class="w-[48%] md:w-auto md:min-w-[160px] relative">
+                            <button 
+                                type="button"
+                                onclick="toggleDropdown('dateDropdown')"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500 text-sm text-left flex items-center justify-between bg-white"
+                            >
+                                <span id="dateFilterLabel" class="truncate">Date Range</span>
+                                <svg class="w-4 h-4 text-gray-400 ml-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </button>
+                            <div id="dateDropdown" class="dropdown-menu absolute z-50 mt-1 w-64 bg-white border border-gray-300 rounded-lg shadow-lg p-3">
+                                <div class="space-y-3">
+                                    <div>
+                                        <label class="block text-xs font-semibold text-gray-700 mb-1">From Date</label>
+                                        <input type="date" id="fromDate" onchange="updateDateFilter()" class="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:border-green-500">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-gray-700 mb-1">To Date</label>
+                                        <input type="date" id="toDate" onchange="updateDateFilter()" class="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:border-green-500">
+                                    </div>
+                                    <button onclick="clearDateFilter()" class="w-full px-3 py-1.5 text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded hover:bg-gray-50">
+                                        Clear Dates
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Reports To Filter -->
+                        <div class="w-[48%] md:w-auto md:min-w-[160px] relative">
+                            <button 
+                                type="button"
+                                onclick="toggleDropdown('reportsToDropdown')"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500 text-sm text-left flex items-center justify-between bg-white"
+                            >
+                                <span id="reportsToFilterLabel" class="truncate">Reports To</span>
+                                <svg class="w-4 h-4 text-gray-400 ml-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </button>
+                            <div id="reportsToDropdown" class="dropdown-menu absolute z-50 mt-1 w-48 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                                <div class="p-2">
+                                    <label class="flex items-center px-3 py-2 hover:bg-gray-50 rounded cursor-pointer">
+                                        <input type="checkbox" value="CPM001" onchange="updateReportsToFilter()" class="reportsto-checkbox w-4 h-4 text-green-600 rounded">
+                                        <span class="ml-2 text-sm text-gray-700 whitespace-nowrap">John Doe</span>
+                                    </label>
+                                    <label class="flex items-center px-3 py-2 hover:bg-gray-50 rounded cursor-pointer">
+                                        <input type="checkbox" value="CPM004" onchange="updateReportsToFilter()" class="reportsto-checkbox w-4 h-4 text-green-600 rounded">
+                                        <span class="ml-2 text-sm text-gray-700 whitespace-nowrap">Sarah Williams</span>
+                                    </label>
+                                    <label class="flex items-center px-3 py-2 hover:bg-gray-50 rounded cursor-pointer">
+                                        <input type="checkbox" value="CPM007" onchange="updateReportsToFilter()" class="reportsto-checkbox w-4 h-4 text-green-600 rounded">
+                                        <span class="ml-2 text-sm text-gray-700 whitespace-nowrap">Robert Wilson</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Reset Filters Button -->
+                        <button onclick="resetAllFilters()" class="w-full md:w-auto flex items-center justify-center gap-2 px-3 py-2 font-semibold rounded-lg transition-all text-sm whitespace-nowrap bg-gray-100 hover:bg-gray-200 text-gray-700">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                            </svg>
+                            Reset
+                        </button>
+                    </div>
+                </div>
                 <div class="table-scroll">
                     <table class="w-full">
                         <thead class="bg-gray-50 border-b border-gray-200 sticky top-0">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">ID</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Name</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Email</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Phone</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Designation</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Reports to Head</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Date Created</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Action</th>
+                                <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">ID</th>
+                                <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Name</th>
+                                <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Email</th>
+                                <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Phone</th>
+                                <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Designation</th>
+                                <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Reports to Head</th>
+                                <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Channel Partners</th>
+                                <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
+                                <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
                             </tr>
                         </thead>
                         <tbody id="tableBody" class="divide-y divide-gray-200">
@@ -325,23 +422,23 @@
                 </div>
                 
                 <!-- Pagination -->
-                <div class="px-6 py-4 border-t border-gray-200 flex flex-col md:flex-row items-center justify-between gap-4">
-                    <div class="flex items-center gap-2 text-sm text-gray-600">
+                <div class="px-4 py-2 border-t border-gray-200 flex flex-col md:flex-row items-center justify-between gap-2">
+                    <div class="flex items-center gap-2 text-xs text-gray-600">
                         <span>Records per page:</span>
-                        <select id="recordsPerPage" onchange="changeRecordsPerPage()" class="px-3 py-1 border border-gray-300 rounded-lg focus:outline-none">
+                        <select id="recordsPerPage" onchange="changeRecordsPerPage()" class="px-2 py-1 border border-gray-300 rounded-lg focus:outline-none text-xs">
                             <option value="10">10</option>
                             <option value="20">20</option>
                             <option value="50">50</option>
                             <option value="100">100</option>
                         </select>
                     </div>
-                    <div class="text-sm text-gray-600">
+                    <div class="text-xs text-gray-600">
                         Showing <span class="font-medium" id="showingStart">1</span> to <span class="font-medium" id="showingEnd">10</span> of <span class="font-medium" id="totalRecords">0</span> results
                     </div>
-                    <div class="flex gap-2">
-                        <button id="prevBtn" onclick="previousPage()" class="px-3 py-1 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" disabled>Previous</button>
+                    <div class="flex gap-1 flex-wrap justify-center">
+                        <button id="prevBtn" onclick="previousPage()" class="px-2 py-1 border border-gray-300 rounded-lg text-xs hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">Previous</button>
                         <div id="paginationNumbers" class="flex gap-1"></div>
-                        <button id="nextBtn" onclick="nextPage()" class="px-3 py-1 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">Next</button>
+                        <button id="nextBtn" onclick="nextPage()" class="px-2 py-1 border border-gray-300 rounded-lg text-xs hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">Next</button>
                     </div>
                 </div>
             </div>
@@ -362,6 +459,7 @@
             
             <form id="addForm" onsubmit="handleSubmit(event)" class="p-6">
                 <input type="hidden" id="editIndex" value="">
+                <input type="hidden" id="viewMode" value="false">
                 
                 <div class="grid md:grid-cols-2 gap-4">
                     <div>
@@ -402,8 +500,8 @@
                     </div>
                 </div>
                 
-                <div class="flex gap-3 mt-6">
-                    <button type="submit" class="flex-1 text-white px-4 py-2 rounded-lg font-medium transition-colors" style="background: linear-gradient(135deg, #95c13d 0%, #7ba82d 100%);">
+                <div class="flex gap-3 mt-6" id="modalButtons">
+                    <button type="submit" id="submitBtn" class="flex-1 text-white px-4 py-2 rounded-lg font-medium transition-colors" style="background: linear-gradient(135deg, #95c13d 0%, #7ba82d 100%);">
                         <span id="submitBtnText">Save</span>
                     </button>
                     <button type="button" onclick="closeAddModal()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors">
@@ -416,16 +514,20 @@
 
     <script>
         let tableData = [
-            { id: 'CPM002', name: 'Jane Smith', email: 'jane.smith@example.com', phone: '+91 9876543211', designation: 'Area Manager', role: 'Manager', reportsTo: 'CPM001', status: 'active', dateCreated: '2024-02-20' },
-            { id: 'CPM003', name: 'Mike Johnson', email: 'mike.j@example.com', phone: '+91 9876543212', designation: 'Team Leader', role: 'Manager', reportsTo: 'CPM001', status: 'inactive', dateCreated: '2024-03-10' },
-            { id: 'CPM005', name: 'David Brown', email: 'david.b@example.com', phone: '+91 9876543214', designation: 'Sales Supervisor', role: 'Manager', reportsTo: 'CPM004', status: 'active', dateCreated: '2024-05-12' },
-            { id: 'CPM006', name: 'Emily Davis', email: 'emily.d@example.com', phone: '+91 9876543215', designation: 'Branch Manager', role: 'Manager', reportsTo: 'CPM004', status: 'inactive', dateCreated: '2024-06-18' },
-            { id: 'CPM008', name: 'Lisa Anderson', email: 'lisa.a@example.com', phone: '+91 9876543217', designation: 'Team Coordinator', role: 'Manager', reportsTo: 'CPM007', status: 'active', dateCreated: '2024-08-30' }
+            { id: 'CPM002', name: 'Jane Smith', email: 'jane.smith@example.com', phone: '+91 9876543211', designation: 'Area Manager', role: 'Manager', reportsTo: 'CPM001', status: 'active', dateCreated: '2024-02-20', channelPartnersCount: 12 },
+            { id: 'CPM003', name: 'Mike Johnson', email: 'mike.j@example.com', phone: '+91 9876543212', designation: 'Team Leader', role: 'Manager', reportsTo: 'CPM001', status: 'inactive', dateCreated: '2024-03-10', channelPartnersCount: 8 },
+            { id: 'CPM005', name: 'David Brown', email: 'david.b@example.com', phone: '+91 9876543214', designation: 'Sales Supervisor', role: 'Manager', reportsTo: 'CPM004', status: 'active', dateCreated: '2024-05-12', channelPartnersCount: 15 },
+            { id: 'CPM006', name: 'Emily Davis', email: 'emily.d@example.com', phone: '+91 9876543215', designation: 'Branch Manager', role: 'Manager', reportsTo: 'CPM004', status: 'inactive', dateCreated: '2024-06-18', channelPartnersCount: 5 },
+            { id: 'CPM008', name: 'Lisa Anderson', email: 'lisa.a@example.com', phone: '+91 9876543217', designation: 'Team Coordinator', role: 'Manager', reportsTo: 'CPM007', status: 'active', dateCreated: '2024-08-30', channelPartnersCount: 20 }
         ];
 
         let filteredData = [...tableData];
         let currentPage = 1;
         let recordsPerPage = 10;
+        
+        let selectedStatuses = [];
+        let selectedReportsTo = [];
+        let dateRange = { from: '', to: '' };
 
         // CP Heads data for lookups
         const headsData = [
@@ -433,21 +535,6 @@
             { id: 'CPM004', name: 'Sarah Williams', status: 'active' },
             { id: 'CPM007', name: 'Robert Wilson', status: 'active' }
         ];
-
-        function populateReportsToFilter() {
-            const reportsToFilterSelect = document.getElementById('reportsToFilter');
-            
-            // Clear existing options except the first one
-            reportsToFilterSelect.innerHTML = '<option value="">All Reports To</option>';
-            
-            // Populate dropdown with heads
-            headsData.forEach(head => {
-                const option = document.createElement('option');
-                option.value = head.id.toLowerCase();
-                option.textContent = head.name;
-                reportsToFilterSelect.appendChild(option);
-            });
-        }
 
         function getHeadNameById(headId) {
             if (!headId) return '-';
@@ -475,7 +562,7 @@
             tbody.innerHTML = '';
             
             if (filteredData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="10" class="px-6 py-8 text-center text-gray-500">No records found</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="9" class="px-3 py-8 text-center text-gray-500 text-sm">No records found</td></tr>';
                 updatePagination();
                 updateStats();
                 return;
@@ -489,44 +576,43 @@
                 const tr = document.createElement('tr');
                 tr.className = 'hover:bg-gray-50';
                 tr.innerHTML = `
-                    <td class="px-6 py-4 text-sm font-medium text-gray-900">${row.id}</td>
-                    <td class="px-6 py-4 text-sm text-gray-900">${row.name}</td>
-                    <td class="px-6 py-4 text-sm text-gray-600">${row.email}</td>
-                    <td class="px-6 py-4 text-sm text-gray-600">${row.phone}</td>
-                    <td class="px-6 py-4 text-sm text-gray-600">${row.designation}</td>
-                    <td class="px-6 py-4 text-sm text-gray-600">${getHeadNameById(row.reportsTo)}</td>
-                    <td class="px-6 py-4">
+                    <td class="px-3 py-4 text-sm font-medium text-gray-900">${row.id}</td>
+                    <td class="px-3 py-4 text-sm text-gray-900">${row.name}</td>
+                    <td class="px-3 py-4 text-sm text-gray-600">${row.email}</td>
+                    <td class="px-3 py-4 text-sm text-gray-600">${row.phone}</td>
+                    <td class="px-3 py-4 text-sm text-gray-600">${row.designation}</td>
+                    <td class="px-3 py-4 text-sm text-gray-600">${getHeadNameById(row.reportsTo)}</td>
+                    <td class="px-3 py-4 text-sm text-center">
+                        <span class="inline-flex items-center justify-center text-blue-700 font-semibold">${row.channelPartnersCount}</span>
+                    </td>
+                    <td class="px-3 py-4">
                         <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ${row.status === 'active' ? 'badge-active' : 'badge-inactive'}">
                             ${row.status.charAt(0).toUpperCase() + row.status.slice(1)}
                         </span>
                     </td>
-                    <td class="px-6 py-4 text-sm text-gray-600">${formatDate(row.dateCreated)}</td>
-                    <td class="px-6 py-4 text-sm relative">
-                        <button onclick="toggleActionMenu(${index})" class="text-gray-500 hover:text-gray-700">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/>
-                            </svg>
-                        </button>
-                        <div id="actionMenu${index}" class="action-menu absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10">
-                            <button onclick="editRecord(${tableData.indexOf(row)})" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
-                                <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <td class="px-3 py-4 text-sm">
+                        <div class="action-icons">
+                            <button onclick="viewRecord(${tableData.indexOf(row)})" title="View" class="text-gray-600 hover:text-gray-800">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                </svg>
+                            </button>
+                            <button onclick="editRecord(${tableData.indexOf(row)})" title="Edit" class="text-blue-600 hover:text-blue-800">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                 </svg>
-                                Edit
                             </button>
-                            <hr class="my-1">
                             ${row.status === 'active' ? 
-                                `<button onclick="handleAction('deactivate', ${tableData.indexOf(row)})" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
-                                    <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                `<button onclick="handleAction('deactivate', ${tableData.indexOf(row)})" title="Deactivate" class="text-orange-500 hover:text-orange-700">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                     </svg>
-                                    Deactivate
                                 </button>` : 
-                                `<button onclick="handleAction('activate', ${tableData.indexOf(row)})" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
-                                    <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                `<button onclick="handleAction('activate', ${tableData.indexOf(row)})" title="Activate" class="text-green-600 hover:text-green-800">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                     </svg>
-                                    Activate
                                 </button>`
                             }
                         </div>
@@ -558,8 +644,8 @@
                 const btn = document.createElement('button');
                 btn.textContent = i;
                 btn.className = i === currentPage 
-                    ? 'px-3 py-1 text-white rounded-lg text-sm'
-                    : 'px-3 py-1 border border-gray-300 rounded-lg text-sm hover:bg-gray-50';
+                    ? 'px-2 py-1 text-white rounded-lg text-xs'
+                    : 'px-2 py-1 border border-gray-300 rounded-lg text-xs hover:bg-gray-50';
                 if (i === currentPage) {
                     btn.style.background = 'linear-gradient(135deg, #95c13d 0%, #7ba82d 100%)';
                 }
@@ -572,12 +658,10 @@
             const total = filteredData.length;
             const active = filteredData.filter(r => r.status === 'active').length;
             const inactive = filteredData.filter(r => r.status === 'inactive').length;
-            const heads = filteredData.filter(r => r.role === 'Head').length;
             
             document.getElementById('stat-total').textContent = total;
             document.getElementById('stat-active').textContent = active;
             document.getElementById('stat-inactive').textContent = inactive;
-            document.getElementById('stat-heads').textContent = heads;
         }
 
         function previousPage() {
@@ -611,37 +695,157 @@
             return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
         }
 
+        function formatDateShort(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        }
+
         function filterTable() {
             const searchInput = document.getElementById('searchInput').value.toLowerCase();
-            const statusFilter = document.getElementById('statusFilter').value.toLowerCase();
-            const reportsToFilter = document.getElementById('reportsToFilter').value.toLowerCase();
             
             filteredData = tableData.filter(row => {
+                // Search filter
                 const matchesSearch = !searchInput || 
                     row.name.toLowerCase().includes(searchInput) ||
                     row.email.toLowerCase().includes(searchInput) ||
-                    row.phone.toLowerCase().includes(searchInput) ||
-                    row.designation.toLowerCase().includes(searchInput) ||
-                    row.id.toLowerCase().includes(searchInput) ||
-                    getHeadNameById(row.reportsTo).toLowerCase().includes(searchInput);
-                    
-                const matchesStatus = !statusFilter || row.status === statusFilter;
-                const matchesReportsTo = !reportsToFilter || 
-                    (row.reportsTo && row.reportsTo.toLowerCase() === reportsToFilter);
+                    row.phone.toLowerCase().includes(searchInput);
                 
-                return matchesSearch && matchesStatus && matchesReportsTo;
+                // Status filter
+                const matchesStatus = selectedStatuses.length === 0 || selectedStatuses.includes(row.status);
+                
+                // Reports To filter
+                const matchesReportsTo = selectedReportsTo.length === 0 || selectedReportsTo.includes(row.reportsTo);
+                
+                // Date range filter
+                let matchesDate = true;
+                if (dateRange.from || dateRange.to) {
+                    const rowDate = new Date(row.dateCreated);
+                    if (dateRange.from && dateRange.to) {
+                        const fromDate = new Date(dateRange.from);
+                        const toDate = new Date(dateRange.to);
+                        matchesDate = rowDate >= fromDate && rowDate <= toDate;
+                    } else if (dateRange.from) {
+                        const fromDate = new Date(dateRange.from);
+                        matchesDate = rowDate >= fromDate;
+                    } else if (dateRange.to) {
+                        const toDate = new Date(dateRange.to);
+                        matchesDate = rowDate <= toDate;
+                    }
+                }
+                
+                return matchesSearch && matchesStatus && matchesReportsTo && matchesDate;
             });
             
             currentPage = 1;
             renderTable();
         }
 
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('sidebar-hidden');
+        function toggleDropdown(dropdownId) {
+            const dropdown = document.getElementById(dropdownId);
+            const allDropdowns = document.querySelectorAll('.dropdown-menu');
+            
+            allDropdowns.forEach(dd => {
+                if (dd.id !== dropdownId) {
+                    dd.classList.remove('active');
+                }
+            });
+            
+            dropdown.classList.toggle('active');
+        }
+
+        function updateStatusFilter() {
+            const checkboxes = document.querySelectorAll('.status-checkbox');
+            selectedStatuses = Array.from(checkboxes)
+                .filter(cb => cb.checked)
+                .map(cb => cb.value);
+            
+            const label = document.getElementById('statusFilterLabel');
+            if (selectedStatuses.length === 0) {
+                label.textContent = 'All Status';
+            } else if (selectedStatuses.length === 1) {
+                label.textContent = selectedStatuses[0].charAt(0).toUpperCase() + selectedStatuses[0].slice(1);
+            } else {
+                label.textContent = `${selectedStatuses.length} Selected`;
+            }
+            
+            filterTable();
+        }
+
+        function updateDateFilter() {
+            dateRange.from = document.getElementById('fromDate').value;
+            dateRange.to = document.getElementById('toDate').value;
+            
+            const label = document.getElementById('dateFilterLabel');
+            if (dateRange.from && dateRange.to) {
+                label.textContent = `${formatDateShort(dateRange.from)} - ${formatDateShort(dateRange.to)}`;
+            } else if (dateRange.from) {
+                label.textContent = `From ${formatDateShort(dateRange.from)}`;
+            } else if (dateRange.to) {
+                label.textContent = `To ${formatDateShort(dateRange.to)}`;
+            } else {
+                label.textContent = 'Date Range';
+            }
+            
+            filterTable();
+        }
+
+        function clearDateFilter() {
+            document.getElementById('fromDate').value = '';
+            document.getElementById('toDate').value = '';
+            dateRange = { from: '', to: '' };
+            document.getElementById('dateFilterLabel').textContent = 'Date Range';
+            filterTable();
+        }
+
+        function updateReportsToFilter() {
+            const checkboxes = document.querySelectorAll('.reportsto-checkbox');
+            selectedReportsTo = Array.from(checkboxes)
+                .filter(cb => cb.checked)
+                .map(cb => cb.value);
+            
+            const label = document.getElementById('reportsToFilterLabel');
+            if (selectedReportsTo.length === 0) {
+                label.textContent = 'Reports To';
+            } else if (selectedReportsTo.length === 1) {
+                const headName = getHeadNameById(selectedReportsTo[0]);
+                label.textContent = headName;
+            } else {
+                label.textContent = `${selectedReportsTo.length} Selected`;
+            }
+            
+            filterTable();
+        }
+
+        function resetAllFilters() {
+            // Clear search input
+            document.getElementById('searchInput').value = '';
+            
+            // Clear status checkboxes
+            document.querySelectorAll('.status-checkbox').forEach(cb => cb.checked = false);
+            selectedStatuses = [];
+            document.getElementById('statusFilterLabel').textContent = 'All Status';
+            
+            // Clear date range
+            document.getElementById('fromDate').value = '';
+            document.getElementById('toDate').value = '';
+            dateRange = { from: '', to: '' };
+            document.getElementById('dateFilterLabel').textContent = 'Date Range';
+            
+            // Clear reports to checkboxes
+            document.querySelectorAll('.reportsto-checkbox').forEach(cb => cb.checked = false);
+            selectedReportsTo = [];
+            document.getElementById('reportsToFilterLabel').textContent = 'Reports To';
+            
+            // Re-filter table
+            filterTable();
         }
 
         function toggleUserMenu() {
             document.getElementById('userMenu').classList.toggle('active');
+        }
+        
+        function toggleMobileMenu() {
+            document.getElementById('mobileMenu').classList.toggle('hidden');
         }
 
         function setActiveNav(element) {
@@ -649,14 +853,6 @@
                 item.classList.remove('active');
             });
             element.classList.add('active');
-        }
-
-        function toggleActionMenu(index) {
-            const menu = document.getElementById(`actionMenu${index}`);
-            document.querySelectorAll('.action-menu').forEach(m => {
-                if (m !== menu) m.classList.remove('active');
-            });
-            menu.classList.toggle('active');
         }
 
         function handleAction(action, index) {
@@ -673,13 +869,66 @@
             filterTable();
         }
 
+        function viewRecord(index) {
+            const record = tableData[index];
+            
+            document.getElementById('editIndex').value = index;
+            document.getElementById('viewMode').value = 'true';
+            
+            // Disable all form fields first
+            document.querySelectorAll('#addForm input, #addForm select, #addForm textarea').forEach(field => {
+                field.disabled = true;
+            });
+            
+            // Hide submit button, show only close button
+            document.getElementById('modalButtons').innerHTML = `
+                <button type="button" onclick="closeAddModal()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors">
+                    Close
+                </button>
+            `;
+            
+            // Now set the modal title
+            document.getElementById('modalTitle').textContent = 'View CP Manager';
+            
+            // Populate form fields
+            document.getElementById('name').value = record.name;
+            document.getElementById('email').value = record.email;
+            document.getElementById('phone').value = record.phone;
+            document.getElementById('designation').value = record.designation;
+            document.getElementById('status').value = record.status;
+            
+            populateHeadsDropdown();
+            document.getElementById('reportsTo').value = record.reportsTo || '';
+            
+            openAddModal();
+        }
+
         function editRecord(index) {
             const record = tableData[index];
             
+            document.getElementById('editIndex').value = index;
+            document.getElementById('viewMode').value = 'false';
+            
+            // Enable all form fields first
+            document.querySelectorAll('#addForm input, #addForm select, #addForm textarea').forEach(field => {
+                field.disabled = false;
+            });
+            
+            // Restore buttons first
+            document.getElementById('modalButtons').innerHTML = `
+                <button type="submit" id="submitBtn" class="flex-1 text-white px-4 py-2 rounded-lg font-medium transition-colors" style="background: linear-gradient(135deg, #95c13d 0%, #7ba82d 100%);">
+                    <span id="submitBtnText">Update</span>
+                </button>
+                <button type="button" onclick="closeAddModal()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors">
+                    Cancel
+                </button>
+            `;
+            
+            // Now set the modal title and button text
             document.getElementById('modalTitle').textContent = 'Edit CP Manager';
             document.getElementById('submitBtnText').textContent = 'Update';
-            document.getElementById('editIndex').value = index;
             
+            // Populate form fields
             document.getElementById('name').value = record.name;
             document.getElementById('email').value = record.email;
             document.getElementById('phone').value = record.phone;
@@ -694,7 +943,6 @@
 
         function openAddModal() {
             document.getElementById('addModal').classList.add('active');
-            populateHeadsDropdown();
         }
 
         function closeAddModal() {
@@ -703,6 +951,22 @@
             document.getElementById('modalTitle').textContent = 'Add New CP Manager';
             document.getElementById('submitBtnText').textContent = 'Save';
             document.getElementById('editIndex').value = '';
+            document.getElementById('viewMode').value = 'false';
+            
+            // Enable all form fields
+            document.querySelectorAll('#addForm input, #addForm select, #addForm textarea').forEach(field => {
+                field.disabled = false;
+            });
+            
+            // Restore buttons
+            document.getElementById('modalButtons').innerHTML = `
+                <button type="submit" id="submitBtn" class="flex-1 text-white px-4 py-2 rounded-lg font-medium transition-colors" style="background: linear-gradient(135deg, #95c13d 0%, #7ba82d 100%);">
+                    <span id="submitBtnText">Save</span>
+                </button>
+                <button type="button" onclick="closeAddModal()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors">
+                    Cancel
+                </button>
+            `;
         }
 
         function handleSubmit(event) {
@@ -732,13 +996,13 @@
                 const newEntry = {
                     id: 'CPM' + String(tableData.length + 1).padStart(3, '0'),
                     ...entry,
-                    dateCreated: new Date().toISOString().split('T')[0]
+                    dateCreated: new Date().toISOString().split('T')[0],
+                    channelPartnersCount: 0
                 };
                 tableData.unshift(newEntry);
                 alert('CP Manager added successfully!');
             }
             
-            populateReportsToFilter();
             filterTable();
             closeAddModal();
         }
@@ -750,8 +1014,8 @@
         }
 
         document.addEventListener('click', function(event) {
-            if (!event.target.closest('.relative')) {
-                document.querySelectorAll('.dropdown-menu, .action-menu').forEach(menu => {
+            if (!event.target.closest('.relative') && !event.target.closest('button')) {
+                document.querySelectorAll('.dropdown-menu').forEach(menu => {
                     menu.classList.remove('active');
                 });
             }
@@ -764,7 +1028,7 @@
         });
 
         // Initialize on page load
-        populateReportsToFilter();
+        populateHeadsDropdown();
         renderTable();
     </script>
 </body>
