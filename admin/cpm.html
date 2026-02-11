@@ -149,6 +149,19 @@
         .notification.show {
             transform: translateX(0);
         }
+        
+        .password-strength {
+            height: 4px;
+            background: #e5e7eb;
+            border-radius: 2px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+        
+        .password-strength-bar {
+            height: 100%;
+            transition: width 0.3s ease, background-color 0.3s ease;
+        }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -264,7 +277,7 @@
     <div class="main-wrapper">
         <!-- Main Content -->
         <main class="main-content">
-             <!-- Title and Stats Row -->
+            <!-- Title and Stats Row -->
             <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4 md:mb-6 gap-3 md:gap-4">
                 <div class="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
                     <h1 class="text-xl md:text-2xl font-bold text-gray-900">CP Managers</h1>
@@ -362,36 +375,6 @@
                             </div>
                         </div>
                         
-                        <!-- Reports To Filter -->
-                        <div class="w-[48%] md:w-auto md:min-w-[160px] relative">
-                            <button 
-                                type="button"
-                                onclick="toggleDropdown('reportsToDropdown')"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500 text-sm text-left flex items-center justify-between bg-white"
-                            >
-                                <span id="reportsToFilterLabel" class="truncate">Reports To</span>
-                                <svg class="w-4 h-4 text-gray-400 ml-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                                </svg>
-                            </button>
-                            <div id="reportsToDropdown" class="dropdown-menu absolute z-50 mt-1 w-48 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                                <div class="p-2">
-                                    <label class="flex items-center px-3 py-2 hover:bg-gray-50 rounded cursor-pointer">
-                                        <input type="checkbox" value="CPM001" onchange="updateReportsToFilter()" class="reportsto-checkbox w-4 h-4 text-green-600 rounded">
-                                        <span class="ml-2 text-sm text-gray-700 whitespace-nowrap">John Doe</span>
-                                    </label>
-                                    <label class="flex items-center px-3 py-2 hover:bg-gray-50 rounded cursor-pointer">
-                                        <input type="checkbox" value="CPM004" onchange="updateReportsToFilter()" class="reportsto-checkbox w-4 h-4 text-green-600 rounded">
-                                        <span class="ml-2 text-sm text-gray-700 whitespace-nowrap">Sarah Williams</span>
-                                    </label>
-                                    <label class="flex items-center px-3 py-2 hover:bg-gray-50 rounded cursor-pointer">
-                                        <input type="checkbox" value="CPM007" onchange="updateReportsToFilter()" class="reportsto-checkbox w-4 h-4 text-green-600 rounded">
-                                        <span class="ml-2 text-sm text-gray-700 whitespace-nowrap">Robert Wilson</span>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                        
                         <!-- Reset Filters Button -->
                         <button onclick="resetAllFilters()" class="w-full md:w-auto flex items-center justify-center gap-2 px-3 py-2 font-semibold rounded-lg transition-all text-sm whitespace-nowrap bg-gray-100 hover:bg-gray-200 text-gray-700">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -410,7 +393,7 @@
                                 <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Email</th>
                                 <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Phone</th>
                                 <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Designation</th>
-                                <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Reports to Head</th>
+                                <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">CP Managers</th>
                                 <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Channel Partners</th>
                                 <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
                                 <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
@@ -482,12 +465,10 @@
                         <input type="text" id="designation" name="designation" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500" required>
                     </div>
                     
-                    <input type="hidden" id="role" name="role" value="Manager">
-                    
-                    <div id="reportsToField">
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Reports to Head <span class="text-red-500">*</span></label>
-                        <select id="reportsTo" name="reportsTo" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500" required>
-                            <option value="">Select Head</option>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Role <span class="text-red-500">*</span></label>
+                        <select id="role" name="role" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500" required onchange="handleRoleChange()">
+                            <option value="Head">Head</option>
                         </select>
                     </div>
                     
@@ -512,6 +493,120 @@
         </div>
     </div>
 
+    <!-- Reset Password Modal -->
+    <div id="resetPasswordModal" class="modal fixed inset-0 bg-black bg-opacity-50 z-50 items-center justify-center p-4">
+        <div class="modal-content bg-white rounded-xl shadow-2xl max-w-md w-full">
+            <div class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+                <h2 class="text-xl font-bold text-gray-900">Reset Password</h2>
+                <button onclick="closeResetPasswordModal()" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <form id="resetPasswordForm" onsubmit="handleResetPassword(event)" class="p-6">
+                <input type="hidden" id="resetUserIndex" value="">
+                
+                <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                    <p class="text-sm text-blue-800">
+                        <span class="font-semibold">User:</span> <span id="resetUserName"></span>
+                    </p>
+                    <p class="text-sm text-blue-800 mt-1">
+                        <span class="font-semibold">Email:</span> <span id="resetUserEmail"></span>
+                    </p>
+                </div>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">New Password <span class="text-red-500">*</span></label>
+                        <div class="relative">
+                            <input 
+                                type="password" 
+                                id="newPassword" 
+                                name="newPassword" 
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500" 
+                                required
+                                minlength="8"
+                                oninput="checkPasswordStrength()"
+                            >
+                            <button 
+                                type="button" 
+                                onclick="togglePasswordVisibility('newPassword', 'toggleNewPassword')"
+                                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                            >
+                                <svg id="toggleNewPassword" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="password-strength">
+                            <div id="passwordStrengthBar" class="password-strength-bar" style="width: 0%; background-color: #e5e7eb;"></div>
+                        </div>
+                        <p id="passwordStrengthText" class="text-xs text-gray-500 mt-1">Password strength: None</p>
+                        <p class="text-xs text-gray-500 mt-1">Minimum 8 characters</p>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Confirm Password <span class="text-red-500">*</span></label>
+                        <div class="relative">
+                            <input 
+                                type="password" 
+                                id="confirmPassword" 
+                                name="confirmPassword" 
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500" 
+                                required
+                                minlength="8"
+                                oninput="checkPasswordMatch()"
+                            >
+                            <button 
+                                type="button" 
+                                onclick="togglePasswordVisibility('confirmPassword', 'toggleConfirmPassword')"
+                                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                            >
+                                <svg id="toggleConfirmPassword" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <p id="passwordMatchText" class="text-xs text-gray-500 mt-1"></p>
+                    </div>
+                </div>
+                
+                <div class="flex gap-3 mt-6">
+                    <button type="submit" class="flex-1 text-white px-4 py-2 rounded-lg font-medium transition-colors" style="background: linear-gradient(135deg, #95c13d 0%, #7ba82d 100%);">
+                        Reset Password
+                    </button>
+                    <button type="button" onclick="closeResetPasswordModal()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Success Notification -->
+    <div id="notification" class="notification bg-white rounded-lg shadow-lg border border-gray-200 p-4 min-w-[300px]">
+        <div class="flex items-start gap-3">
+            <div class="flex-shrink-0">
+                <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <div class="flex-1">
+                <h3 class="text-sm font-semibold text-gray-900">Success</h3>
+                <p id="notificationMessage" class="text-sm text-gray-600 mt-1"></p>
+            </div>
+            <button onclick="hideNotification()" class="flex-shrink-0 text-gray-400 hover:text-gray-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
     <script>
         let tableData = [
             { id: 'CPM002', name: 'Jane Smith', email: 'jane.smith@example.com', phone: '+91 9876543211', designation: 'Area Manager', role: 'Manager', reportsTo: 'CPM001', status: 'active', dateCreated: '2024-02-20', channelPartnersCount: 12 },
@@ -521,14 +616,6 @@
             { id: 'CPM008', name: 'Lisa Anderson', email: 'lisa.a@example.com', phone: '+91 9876543217', designation: 'Team Coordinator', role: 'Manager', reportsTo: 'CPM007', status: 'active', dateCreated: '2024-08-30', channelPartnersCount: 20 }
         ];
 
-        let filteredData = [...tableData];
-        let currentPage = 1;
-        let recordsPerPage = 10;
-        
-        let selectedStatuses = [];
-        let selectedReportsTo = [];
-        let dateRange = { from: '', to: '' };
-
         // CP Heads data for lookups
         const headsData = [
             { id: 'CPM001', name: 'John Doe', status: 'active' },
@@ -536,26 +623,31 @@
             { id: 'CPM007', name: 'Robert Wilson', status: 'active' }
         ];
 
-        function getHeadNameById(headId) {
-            if (!headId) return '-';
-            const head = headsData.find(item => item.id === headId);
-            return head ? head.name : '-';
+        // CP Managers data for lookup
+        const managersData = [
+            { id: 'CPM002', name: 'Jane Smith', reportsTo: 'CPM001', status: 'active' },
+            { id: 'CPM003', name: 'Mike Johnson', reportsTo: 'CPM001', status: 'inactive' },
+            { id: 'CPM005', name: 'David Brown', reportsTo: 'CPM004', status: 'active' },
+            { id: 'CPM006', name: 'Emily Davis', reportsTo: 'CPM004', status: 'inactive' },
+            { id: 'CPM008', name: 'Lisa Anderson', reportsTo: 'CPM007', status: 'active' }
+        ];
+
+        function getManagersForHead(headId) {
+            return managersData.filter(m => m.reportsTo === headId);
         }
 
-        function populateHeadsDropdown() {
-            const reportsToSelect = document.getElementById('reportsTo');
-            
-            // Clear existing options except the first one
-            reportsToSelect.innerHTML = '<option value="">Select Head</option>';
-            
-            // Populate dropdown with active heads
-            headsData.filter(h => h.status === 'active').forEach(head => {
-                const option = document.createElement('option');
-                option.value = head.id;
-                option.textContent = head.name;
-                reportsToSelect.appendChild(option);
-            });
+        function getManagersTooltip(headId) {
+            const managers = getManagersForHead(headId);
+            if (managers.length === 0) return 'No managers assigned';
+            return managers.map(m => m.name).join(', ');
         }
+
+        let filteredData = [...tableData];
+        let currentPage = 1;
+        let recordsPerPage = 10;
+        
+        let selectedStatuses = [];
+        let dateRange = { from: '', to: '' };
 
         function renderTable() {
             const tbody = document.getElementById('tableBody');
@@ -573,6 +665,8 @@
             const pageData = filteredData.slice(start, end);
             
             pageData.forEach((row, index) => {
+                const managerCount = getManagersForHead(row.id).length;
+                const managerTooltip = getManagersTooltip(row.id);
                 const tr = document.createElement('tr');
                 tr.className = 'hover:bg-gray-50';
                 tr.innerHTML = `
@@ -581,7 +675,11 @@
                     <td class="px-3 py-4 text-sm text-gray-600">${row.email}</td>
                     <td class="px-3 py-4 text-sm text-gray-600">${row.phone}</td>
                     <td class="px-3 py-4 text-sm text-gray-600">${row.designation}</td>
-                    <td class="px-3 py-4 text-sm text-gray-600">${getHeadNameById(row.reportsTo)}</td>
+                    <td class="px-3 py-4 text-sm text-center">
+                        <span class="inline-flex items-center justify-center px-3 py-1 bg-blue-100 text-blue-800 font-semibold rounded-full cursor-pointer" title="${managerTooltip}">
+                            ${managerCount}
+                        </span>
+                    </td>
                     <td class="px-3 py-4 text-sm text-center">
                         <span class="inline-flex items-center justify-center text-blue-700 font-semibold">${row.channelPartnersCount}</span>
                     </td>
@@ -601,6 +699,11 @@
                             <button onclick="editRecord(${tableData.indexOf(row)})" title="Edit" class="text-blue-600 hover:text-blue-800">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                </svg>
+                            </button>
+                            <button onclick="openResetPasswordModal(${tableData.indexOf(row)})" title="Reset Password" class="text-purple-600 hover:text-purple-800">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
                                 </svg>
                             </button>
                             ${row.status === 'active' ? 
@@ -713,9 +816,6 @@
                 // Status filter
                 const matchesStatus = selectedStatuses.length === 0 || selectedStatuses.includes(row.status);
                 
-                // Reports To filter
-                const matchesReportsTo = selectedReportsTo.length === 0 || selectedReportsTo.includes(row.reportsTo);
-                
                 // Date range filter
                 let matchesDate = true;
                 if (dateRange.from || dateRange.to) {
@@ -733,7 +833,7 @@
                     }
                 }
                 
-                return matchesSearch && matchesStatus && matchesReportsTo && matchesDate;
+                return matchesSearch && matchesStatus && matchesDate;
             });
             
             currentPage = 1;
@@ -797,25 +897,6 @@
             filterTable();
         }
 
-        function updateReportsToFilter() {
-            const checkboxes = document.querySelectorAll('.reportsto-checkbox');
-            selectedReportsTo = Array.from(checkboxes)
-                .filter(cb => cb.checked)
-                .map(cb => cb.value);
-            
-            const label = document.getElementById('reportsToFilterLabel');
-            if (selectedReportsTo.length === 0) {
-                label.textContent = 'Reports To';
-            } else if (selectedReportsTo.length === 1) {
-                const headName = getHeadNameById(selectedReportsTo[0]);
-                label.textContent = headName;
-            } else {
-                label.textContent = `${selectedReportsTo.length} Selected`;
-            }
-            
-            filterTable();
-        }
-
         function resetAllFilters() {
             // Clear search input
             document.getElementById('searchInput').value = '';
@@ -831,11 +912,6 @@
             dateRange = { from: '', to: '' };
             document.getElementById('dateFilterLabel').textContent = 'Date Range';
             
-            // Clear reports to checkboxes
-            document.querySelectorAll('.reportsto-checkbox').forEach(cb => cb.checked = false);
-            selectedReportsTo = [];
-            document.getElementById('reportsToFilterLabel').textContent = 'Reports To';
-            
             // Re-filter table
             filterTable();
         }
@@ -843,7 +919,7 @@
         function toggleUserMenu() {
             document.getElementById('userMenu').classList.toggle('active');
         }
-        
+
         function toggleMobileMenu() {
             document.getElementById('mobileMenu').classList.toggle('hidden');
         }
@@ -860,10 +936,10 @@
             
             if (action === 'activate') {
                 tableData[index].status = 'active';
-                alert(`${item.name} has been activated`);
+                showNotification(`${item.name} has been activated`);
             } else if (action === 'deactivate') {
                 tableData[index].status = 'inactive';
-                alert(`${item.name} has been deactivated`);
+                showNotification(`${item.name} has been deactivated`);
             }
             
             filterTable();
@@ -895,10 +971,8 @@
             document.getElementById('email').value = record.email;
             document.getElementById('phone').value = record.phone;
             document.getElementById('designation').value = record.designation;
+            document.getElementById('role').value = record.role;
             document.getElementById('status').value = record.status;
-            
-            populateHeadsDropdown();
-            document.getElementById('reportsTo').value = record.reportsTo || '';
             
             openAddModal();
         }
@@ -933,10 +1007,8 @@
             document.getElementById('email').value = record.email;
             document.getElementById('phone').value = record.phone;
             document.getElementById('designation').value = record.designation;
+            document.getElementById('role').value = record.role;
             document.getElementById('status').value = record.status;
-            
-            populateHeadsDropdown();
-            document.getElementById('reportsTo').value = record.reportsTo || '';
             
             openAddModal();
         }
@@ -980,8 +1052,8 @@
                 email: formData.get('email'),
                 phone: formData.get('phone'),
                 designation: formData.get('designation'),
-                role: 'Manager',
-                reportsTo: formData.get('reportsTo'),
+                role: 'Head',
+                reportsTo: null,
                 status: formData.get('status')
             };
             
@@ -991,7 +1063,7 @@
                     ...tableData[index],
                     ...entry
                 };
-                alert('CP Manager updated successfully!');
+                showNotification('CP Head updated successfully!');
             } else {
                 const newEntry = {
                     id: 'CPM' + String(tableData.length + 1).padStart(3, '0'),
@@ -1000,11 +1072,140 @@
                     channelPartnersCount: 0
                 };
                 tableData.unshift(newEntry);
-                alert('CP Manager added successfully!');
+                showNotification('CP Head added successfully!');
             }
             
             filterTable();
             closeAddModal();
+        }
+
+        // Password Reset Functions
+        function openResetPasswordModal(index) {
+            const record = tableData[index];
+            document.getElementById('resetUserIndex').value = index;
+            document.getElementById('resetUserName').textContent = record.name;
+            document.getElementById('resetUserEmail').textContent = record.email;
+            document.getElementById('resetPasswordModal').classList.add('active');
+            document.getElementById('resetPasswordForm').reset();
+            document.getElementById('passwordStrengthBar').style.width = '0%';
+            document.getElementById('passwordStrengthBar').style.backgroundColor = '#e5e7eb';
+            document.getElementById('passwordStrengthText').textContent = 'Password strength: None';
+            document.getElementById('passwordMatchText').textContent = '';
+        }
+
+        function closeResetPasswordModal() {
+            document.getElementById('resetPasswordModal').classList.remove('active');
+            document.getElementById('resetPasswordForm').reset();
+        }
+
+        function togglePasswordVisibility(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>';
+            } else {
+                input.type = 'password';
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>';
+            }
+        }
+
+        function checkPasswordStrength() {
+            const password = document.getElementById('newPassword').value;
+            const strengthBar = document.getElementById('passwordStrengthBar');
+            const strengthText = document.getElementById('passwordStrengthText');
+            
+            let strength = 0;
+            let strengthLabel = 'None';
+            let color = '#e5e7eb';
+            
+            if (password.length >= 8) strength += 25;
+            if (password.length >= 12) strength += 25;
+            if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength += 20;
+            if (/[0-9]/.test(password)) strength += 15;
+            if (/[^a-zA-Z0-9]/.test(password)) strength += 15;
+            
+            if (strength <= 25) {
+                strengthLabel = 'Weak';
+                color = '#ef4444';
+            } else if (strength <= 50) {
+                strengthLabel = 'Fair';
+                color = '#f59e0b';
+            } else if (strength <= 75) {
+                strengthLabel = 'Good';
+                color = '#3b82f6';
+            } else {
+                strengthLabel = 'Strong';
+                color = '#10b981';
+            }
+            
+            strengthBar.style.width = strength + '%';
+            strengthBar.style.backgroundColor = color;
+            strengthText.textContent = `Password strength: ${strengthLabel}`;
+            strengthText.style.color = color;
+            
+            checkPasswordMatch();
+        }
+
+        function checkPasswordMatch() {
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const matchText = document.getElementById('passwordMatchText');
+            
+            if (confirmPassword.length === 0) {
+                matchText.textContent = '';
+                return;
+            }
+            
+            if (newPassword === confirmPassword) {
+                matchText.textContent = '✓ Passwords match';
+                matchText.style.color = '#10b981';
+            } else {
+                matchText.textContent = '✗ Passwords do not match';
+                matchText.style.color = '#ef4444';
+            }
+        }
+
+        function handleResetPassword(event) {
+            event.preventDefault();
+            
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const userIndex = parseInt(document.getElementById('resetUserIndex').value);
+            
+            if (newPassword !== confirmPassword) {
+                alert('Passwords do not match!');
+                return;
+            }
+            
+            if (newPassword.length < 8) {
+                alert('Password must be at least 8 characters long!');
+                return;
+            }
+            
+            const user = tableData[userIndex];
+            
+            // In a real application, this would make an API call to reset the password
+            // For this demo, we'll just show a success message
+            showNotification(`Password reset successfully for ${user.name}. A confirmation email has been sent to ${user.email}.`);
+            
+            closeResetPasswordModal();
+        }
+
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            const messageEl = document.getElementById('notificationMessage');
+            messageEl.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                hideNotification();
+            }, 5000);
+        }
+
+        function hideNotification() {
+            document.getElementById('notification').classList.remove('show');
         }
 
         function handleLogout() {
@@ -1027,8 +1228,13 @@
             }
         });
 
+        document.getElementById('resetPasswordModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeResetPasswordModal();
+            }
+        });
+
         // Initialize on page load
-        populateHeadsDropdown();
         renderTable();
     </script>
 </body>

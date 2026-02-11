@@ -146,12 +146,6 @@
             color: #92400e;
         }
         
-        .action-icons {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
         .cpm-assign-wrapper {
             position: relative;
         }
@@ -175,6 +169,22 @@
             display: block;
         }
         
+        .badge-approved {
+            background: #dcfce7;
+            color: #166534;
+        }
+        
+        .badge-rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .action-icons {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
         .notification {
             position: fixed;
             top: 80px;
@@ -186,6 +196,19 @@
         
         .notification.show {
             transform: translateX(0);
+        }
+        
+        .password-strength {
+            height: 4px;
+            background: #e5e7eb;
+            border-radius: 2px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+        
+        .password-strength-bar {
+            height: 100%;
+            transition: width 0.3s ease, background-color 0.3s ease;
         }
     </style>
 </head>
@@ -316,6 +339,8 @@
                         <span>Approved: <span class="font-semibold text-green-600" id="stat-approved">0</span></span>
                         <span class="text-gray-300">|</span>
                         <span>Rejected: <span class="font-semibold text-red-600" id="stat-rejected">0</span></span>
+                        <span class="text-gray-300">|</span>
+                        <span>Pending Approval: <span class="font-semibold text-amber-600" id="stat-pending">0</span></span>
                     </div>
                 </div>
                 
@@ -375,128 +400,6 @@
                             </div>
                         </div>
                         
-                        <!-- Approval Status Filter -->
-                        <div class="w-[48%] md:w-auto md:min-w-[160px] relative">
-                            <button 
-                                type="button"
-                                onclick="toggleDropdown('approvalDropdown')"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500 text-sm text-left flex items-center justify-between bg-white"
-                            >
-                                <span id="approvalFilterLabel" class="truncate">All Approvals</span>
-                                <svg class="w-4 h-4 text-gray-400 ml-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                                </svg>
-                            </button>
-                            <div id="approvalDropdown" class="dropdown-menu absolute z-50 mt-1 w-48 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                                <div class="p-2">
-                                    <label class="flex items-center px-3 py-2 hover:bg-gray-50 rounded cursor-pointer">
-                                        <input type="checkbox" value="approved" onchange="updateApprovalFilter()" class="approval-checkbox w-4 h-4 text-green-600 rounded">
-                                        <span class="ml-2 text-sm text-gray-700 whitespace-nowrap">Approved</span>
-                                    </label>
-                                    <label class="flex items-center px-3 py-2 hover:bg-gray-50 rounded cursor-pointer">
-                                        <input type="checkbox" value="rejected" onchange="updateApprovalFilter()" class="approval-checkbox w-4 h-4 text-green-600 rounded">
-                                        <span class="ml-2 text-sm text-gray-700 whitespace-nowrap">Rejected</span>
-                                    </label>
-                                    <label class="flex items-center px-3 py-2 hover:bg-gray-50 rounded cursor-pointer">
-                                        <input type="checkbox" value="pending" onchange="updateApprovalFilter()" class="approval-checkbox w-4 h-4 text-green-600 rounded">
-                                        <span class="ml-2 text-sm text-gray-700 whitespace-nowrap">Pending</span>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Assigned CP Manager Filter -->
-                        <div class="w-[48%] md:w-auto md:min-w-[180px] relative">
-                            <button 
-                                type="button"
-                                onclick="toggleDropdown('assignedManagerDropdown')"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500 text-sm text-left flex items-center justify-between bg-white"
-                            >
-                                <span id="assignedManagerFilterLabel" class="truncate">All Managers</span>
-                                <svg class="w-4 h-4 text-gray-400 ml-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                                </svg>
-                            </button>
-                            <div id="assignedManagerDropdown" class="dropdown-menu absolute z-50 mt-1 w-48 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                                <div class="p-2">
-                                    <label class="flex items-center px-3 py-2 hover:bg-gray-50 rounded cursor-pointer">
-                                        <input type="checkbox" value="Jane Smith (CPM002)" onchange="updateAssignedManagerFilter()" class="assigned-manager-checkbox w-4 h-4 text-green-600 rounded">
-                                        <span class="ml-2 text-sm text-gray-700 whitespace-nowrap">Jane Smith</span>
-                                    </label>
-                                    <label class="flex items-center px-3 py-2 hover:bg-gray-50 rounded cursor-pointer">
-                                        <input type="checkbox" value="Mike Johnson (CPM003)" onchange="updateAssignedManagerFilter()" class="assigned-manager-checkbox w-4 h-4 text-green-600 rounded">
-                                        <span class="ml-2 text-sm text-gray-700 whitespace-nowrap">Mike Johnson</span>
-                                    </label>
-                                    <label class="flex items-center px-3 py-2 hover:bg-gray-50 rounded cursor-pointer">
-                                        <input type="checkbox" value="David Brown (CPM005)" onchange="updateAssignedManagerFilter()" class="assigned-manager-checkbox w-4 h-4 text-green-600 rounded">
-                                        <span class="ml-2 text-sm text-gray-700 whitespace-nowrap">David Brown</span>
-                                    </label>
-                                    <label class="flex items-center px-3 py-2 hover:bg-gray-50 rounded cursor-pointer">
-                                        <input type="checkbox" value="Emily Davis (CPM006)" onchange="updateAssignedManagerFilter()" class="assigned-manager-checkbox w-4 h-4 text-green-600 rounded">
-                                        <span class="ml-2 text-sm text-gray-700 whitespace-nowrap">Emily Davis</span>
-                                    </label>
-                                    <label class="flex items-center px-3 py-2 hover:bg-gray-50 rounded cursor-pointer">
-                                        <input type="checkbox" value="Lisa Anderson (CPM008)" onchange="updateAssignedManagerFilter()" class="assigned-manager-checkbox w-4 h-4 text-green-600 rounded">
-                                        <span class="ml-2 text-sm text-gray-700 whitespace-nowrap">Lisa Anderson</span>
-                                    </label>
-                                    <label class="flex items-center px-3 py-2 hover:bg-gray-50 rounded cursor-pointer">
-                                        <input type="checkbox" value="" onchange="updateAssignedManagerFilter()" class="assigned-manager-checkbox w-4 h-4 text-green-600 rounded">
-                                        <span class="ml-2 text-sm text-gray-700 whitespace-nowrap">Not Assigned</span>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Location Filter -->
-                        <div class="w-[48%] md:w-auto md:min-w-[140px] relative">
-                            <button 
-                                type="button"
-                                onclick="toggleDropdown('locationDropdown')"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500 text-sm text-left flex items-center justify-between bg-white"
-                            >
-                                <span id="locationFilterLabel" class="truncate">All Locations</span>
-                                <svg class="w-4 h-4 text-gray-400 ml-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                                </svg>
-                            </button>
-                            <div id="locationDropdown" class="dropdown-menu absolute z-50 mt-1 w-48 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                                <div class="p-2">
-                                    <label class="flex items-center px-3 py-2 hover:bg-gray-50 rounded cursor-pointer">
-                                        <input type="checkbox" value="Bangalore" onchange="updateLocationFilter()" class="location-checkbox w-4 h-4 text-green-600 rounded">
-                                        <span class="ml-2 text-sm text-gray-700 whitespace-nowrap">Bangalore</span>
-                                    </label>
-                                    <label class="flex items-center px-3 py-2 hover:bg-gray-50 rounded cursor-pointer">
-                                        <input type="checkbox" value="Mumbai" onchange="updateLocationFilter()" class="location-checkbox w-4 h-4 text-green-600 rounded">
-                                        <span class="ml-2 text-sm text-gray-700 whitespace-nowrap">Mumbai</span>
-                                    </label>
-                                    <label class="flex items-center px-3 py-2 hover:bg-gray-50 rounded cursor-pointer">
-                                        <input type="checkbox" value="Pune" onchange="updateLocationFilter()" class="location-checkbox w-4 h-4 text-green-600 rounded">
-                                        <span class="ml-2 text-sm text-gray-700 whitespace-nowrap">Pune</span>
-                                    </label>
-                                    <label class="flex items-center px-3 py-2 hover:bg-gray-50 rounded cursor-pointer">
-                                        <input type="checkbox" value="Delhi" onchange="updateLocationFilter()" class="location-checkbox w-4 h-4 text-green-600 rounded">
-                                        <span class="ml-2 text-sm text-gray-700 whitespace-nowrap">Delhi</span>
-                                    </label>
-                                    <label class="flex items-center px-3 py-2 hover:bg-gray-50 rounded cursor-pointer">
-                                        <input type="checkbox" value="Ahmedabad" onchange="updateLocationFilter()" class="location-checkbox w-4 h-4 text-green-600 rounded">
-                                        <span class="ml-2 text-sm text-gray-700 whitespace-nowrap">Ahmedabad</span>
-                                    </label>
-                                    <label class="flex items-center px-3 py-2 hover:bg-gray-50 rounded cursor-pointer">
-                                        <input type="checkbox" value="Chennai" onchange="updateLocationFilter()" class="location-checkbox w-4 h-4 text-green-600 rounded">
-                                        <span class="ml-2 text-sm text-gray-700 whitespace-nowrap">Chennai</span>
-                                    </label>
-                                    <label class="flex items-center px-3 py-2 hover:bg-gray-50 rounded cursor-pointer">
-                                        <input type="checkbox" value="Hyderabad" onchange="updateLocationFilter()" class="location-checkbox w-4 h-4 text-green-600 rounded">
-                                        <span class="ml-2 text-sm text-gray-700 whitespace-nowrap">Hyderabad</span>
-                                    </label>
-                                    <label class="flex items-center px-3 py-2 hover:bg-gray-50 rounded cursor-pointer">
-                                        <input type="checkbox" value="Kolkata" onchange="updateLocationFilter()" class="location-checkbox w-4 h-4 text-green-600 rounded">
-                                        <span class="ml-2 text-sm text-gray-700 whitespace-nowrap">Kolkata</span>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                        
                         <!-- Date Range Filter -->
                         <div class="w-[48%] md:w-auto md:min-w-[160px] relative">
                             <button 
@@ -526,32 +429,6 @@
                             </div>
                         </div>
                         
-                        <!-- Reports To (CP Head) Filter -->
-                        <div class="w-[48%] md:w-auto md:min-w-[160px] relative">
-                            <button 
-                                type="button"
-                                onclick="toggleDropdown('reportsToDropdown')"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500 text-sm text-left flex items-center justify-between bg-white"
-                            >
-                                <span id="reportsToFilterLabel" class="truncate">Reports To</span>
-                                <svg class="w-4 h-4 text-gray-400 ml-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                                </svg>
-                            </button>
-                            <div id="reportsToDropdown" class="dropdown-menu absolute z-50 mt-1 w-48 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                                <div class="p-2">
-                                    <label class="flex items-center px-3 py-2 hover:bg-gray-50 rounded cursor-pointer">
-                                        <input type="checkbox" value="Suresh Patel" onchange="updateReportsToFilter()" class="reportsto-checkbox w-4 h-4 text-green-600 rounded">
-                                        <span class="ml-2 text-sm text-gray-700 whitespace-nowrap">Suresh Patel</span>
-                                    </label>
-                                    <label class="flex items-center px-3 py-2 hover:bg-gray-50 rounded cursor-pointer">
-                                        <input type="checkbox" value="Rajiv Kumar" onchange="updateReportsToFilter()" class="reportsto-checkbox w-4 h-4 text-green-600 rounded">
-                                        <span class="ml-2 text-sm text-gray-700 whitespace-nowrap">Rajiv Kumar</span>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                        
                         <!-- Reset Filters Button -->
                         <button onclick="resetAllFilters()" class="w-full md:w-auto flex items-center justify-center gap-2 px-3 py-2 font-semibold rounded-lg transition-all text-sm whitespace-nowrap bg-gray-100 hover:bg-gray-200 text-gray-700">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -569,12 +446,10 @@
                                 <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Name</th>
                                 <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Email</th>
                                 <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Phone</th>
-                                <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Type</th>
+                                <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Designation</th>
+                                <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">CP Managers</th>
+                                <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Channel Partners</th>
                                 <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
-                                <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Approval</th>
-                                <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Assigned CP Manager</th>
-                                <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">CP Head</th>
-                                <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Leads</th>
                                 <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
                             </tr>
                         </thead>
@@ -609,7 +484,7 @@
 
     <!-- Add/Edit Modal -->
     <div id="addModal" class="modal fixed inset-0 bg-black bg-opacity-50 z-50 items-center justify-center p-4">
-        <div class="modal-content bg-white rounded-xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="modal-content bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
                 <h2 id="modalTitle" class="text-xl font-bold text-gray-900">Add New Channel Partner</h2>
                 <button onclick="closeAddModal()" class="text-gray-400 hover:text-gray-600">
@@ -624,21 +499,6 @@
                 <input type="hidden" id="viewMode" value="false">
                 
                 <div class="grid md:grid-cols-2 gap-4">
-                    <!-- Partner Type -->
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Partner Type <span class="text-red-500">*</span></label>
-                        <div class="flex gap-6">
-                            <label class="flex items-center cursor-pointer">
-                                <input type="radio" name="partnerType" value="individual" class="w-4 h-4 text-blue-600" checked>
-                                <span class="ml-2 text-gray-700">Individual</span>
-                            </label>
-                            <label class="flex items-center cursor-pointer">
-                                <input type="radio" name="partnerType" value="company" class="w-4 h-4 text-blue-600">
-                                <span class="ml-2 text-gray-700">Company</span>
-                            </label>
-                        </div>
-                    </div>
-
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-2">Name <span class="text-red-500">*</span></label>
                         <input type="text" id="name" name="name" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500" required>
@@ -655,23 +515,15 @@
                     </div>
                     
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">RERA Registration No <span class="text-red-500"></span></label>
-                        <input type="text" id="reraNo" name="reraNo" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500 uppercase">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Designation <span class="text-red-500">*</span></label>
+                        <input type="text" id="designation" name="designation" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500" required>
                     </div>
                     
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">PAN Card Number <span class="text-red-500"></span></label>
-                        <input type="text" id="panNo" name="panNo" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500 uppercase" pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}" maxlength="10">
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">GST Number <span class="text-red-500"></span></label>
-                        <input type="text" id="gstNo" name="gstNo" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500 uppercase" pattern="[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}" maxlength="15">
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">City/Location <span class="text-red-500">*</span></label>
-                        <input type="text" id="location" name="location" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500" required>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Role <span class="text-red-500">*</span></label>
+                        <select id="role" name="role" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500" required onchange="handleRoleChange()">
+                            <option value="Head">Head</option>
+                        </select>
                     </div>
                     
                     <div>
@@ -680,18 +532,6 @@
                             <option value="active">Active</option>
                             <option value="inactive">Inactive</option>
                         </select>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Assign CP Manager</label>
-                        <select id="assignedCPManager" name="assignedCPManager" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500">
-                            <option value="">Select Manager</option>
-                        </select>
-                    </div>
-                    
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Address <span class="text-red-500">*</span></label>
-                        <textarea id="address" name="address" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500" required></textarea>
                     </div>
                 </div>
                 
@@ -704,6 +544,120 @@
                     </button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Reset Password Modal -->
+    <div id="resetPasswordModal" class="modal fixed inset-0 bg-black bg-opacity-50 z-50 items-center justify-center p-4">
+        <div class="modal-content bg-white rounded-xl shadow-2xl max-w-md w-full">
+            <div class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+                <h2 class="text-xl font-bold text-gray-900">Reset Password</h2>
+                <button onclick="closeResetPasswordModal()" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <form id="resetPasswordForm" onsubmit="handleResetPassword(event)" class="p-6">
+                <input type="hidden" id="resetUserIndex" value="">
+                
+                <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                    <p class="text-sm text-blue-800">
+                        <span class="font-semibold">User:</span> <span id="resetUserName"></span>
+                    </p>
+                    <p class="text-sm text-blue-800 mt-1">
+                        <span class="font-semibold">Email:</span> <span id="resetUserEmail"></span>
+                    </p>
+                </div>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">New Password <span class="text-red-500">*</span></label>
+                        <div class="relative">
+                            <input 
+                                type="password" 
+                                id="newPassword" 
+                                name="newPassword" 
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500" 
+                                required
+                                minlength="8"
+                                oninput="checkPasswordStrength()"
+                            >
+                            <button 
+                                type="button" 
+                                onclick="togglePasswordVisibility('newPassword', 'toggleNewPassword')"
+                                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                            >
+                                <svg id="toggleNewPassword" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="password-strength">
+                            <div id="passwordStrengthBar" class="password-strength-bar" style="width: 0%; background-color: #e5e7eb;"></div>
+                        </div>
+                        <p id="passwordStrengthText" class="text-xs text-gray-500 mt-1">Password strength: None</p>
+                        <p class="text-xs text-gray-500 mt-1">Minimum 8 characters</p>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Confirm Password <span class="text-red-500">*</span></label>
+                        <div class="relative">
+                            <input 
+                                type="password" 
+                                id="confirmPassword" 
+                                name="confirmPassword" 
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500" 
+                                required
+                                minlength="8"
+                                oninput="checkPasswordMatch()"
+                            >
+                            <button 
+                                type="button" 
+                                onclick="togglePasswordVisibility('confirmPassword', 'toggleConfirmPassword')"
+                                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                            >
+                                <svg id="toggleConfirmPassword" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <p id="passwordMatchText" class="text-xs text-gray-500 mt-1"></p>
+                    </div>
+                </div>
+                
+                <div class="flex gap-3 mt-6">
+                    <button type="submit" class="flex-1 text-white px-4 py-2 rounded-lg font-medium transition-colors" style="background: linear-gradient(135deg, #95c13d 0%, #7ba82d 100%);">
+                        Reset Password
+                    </button>
+                    <button type="button" onclick="closeResetPasswordModal()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Success Notification -->
+    <div id="notification" class="notification bg-white rounded-lg shadow-lg border border-gray-200 p-4 min-w-[300px]">
+        <div class="flex items-start gap-3">
+            <div class="flex-shrink-0">
+                <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <div class="flex-1">
+                <h3 class="text-sm font-semibold text-gray-900">Success</h3>
+                <p id="notificationMessage" class="text-sm text-gray-600 mt-1"></p>
+            </div>
+            <button onclick="hideNotification()" class="flex-shrink-0 text-gray-400 hover:text-gray-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
         </div>
     </div>
 
@@ -727,39 +681,38 @@
             { id: 'CPM008', name: 'Lisa Anderson' }
         ];
 
+        // CP Managers data for lookup
+        const managersData = [
+            { id: 'CPM002', name: 'Jane Smith', reportsTo: 'CPM001', status: 'active' },
+            { id: 'CPM003', name: 'Mike Johnson', reportsTo: 'CPM001', status: 'inactive' },
+            { id: 'CPM005', name: 'David Brown', reportsTo: 'CPM004', status: 'active' },
+            { id: 'CPM006', name: 'Emily Davis', reportsTo: 'CPM004', status: 'inactive' },
+            { id: 'CPM008', name: 'Lisa Anderson', reportsTo: 'CPM007', status: 'active' }
+        ];
+
+        function getManagersForHead(headId) {
+            return managersData.filter(m => m.reportsTo === headId);
+        }
+
+        function getManagersTooltip(headId) {
+            const managers = getManagersForHead(headId);
+            if (managers.length === 0) return 'No managers assigned';
+            return managers.map(m => m.name).join(', ');
+        }
+
         let filteredData = [...tableData];
         let currentPage = 1;
         let recordsPerPage = 10;
         
         let selectedStatuses = [];
-        let selectedApprovals = [];
-        let selectedAssignedManagers = [];
-        let selectedLocations = [];
-        let selectedReportsTo = [];
         let dateRange = { from: '', to: '' };
-
-        function maskPAN(pan) {
-            if (pan.length !== 10) return pan;
-            return pan.substring(0, 2) + 'XXX' + pan.substring(5, 9) + pan.substring(9);
-        }
-
-        function getCPHeadFromManager(managerName) {
-            const managerMap = {
-                'Jane Smith (CPM002)': 'Suresh Patel',
-                'Mike Johnson (CPM003)': 'Suresh Patel',
-                'David Brown (CPM005)': 'Suresh Patel',
-                'Emily Davis (CPM006)': 'Rajiv Kumar',
-                'Lisa Anderson (CPM008)': 'Rajiv Kumar'
-            };
-            return managerMap[managerName] || '-';
-        }
 
         function renderTable() {
             const tbody = document.getElementById('tableBody');
             tbody.innerHTML = '';
             
             if (filteredData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="11" class="px-6 py-8 text-center text-gray-500">No records found</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="9" class="px-3 py-8 text-center text-gray-500 text-sm">No records found</td></tr>';
                 updatePagination();
                 updateStats();
                 return;
@@ -770,6 +723,8 @@
             const pageData = filteredData.slice(start, end);
             
             pageData.forEach((row, index) => {
+                const managerCount = getManagersForHead(row.id).length;
+                const managerTooltip = getManagersTooltip(row.id);
                 const tr = document.createElement('tr');
                 tr.className = 'hover:bg-gray-50';
                 tr.innerHTML = `
@@ -777,25 +732,19 @@
                     <td class="px-3 py-4 text-sm text-gray-900">${row.name}</td>
                     <td class="px-3 py-4 text-sm text-gray-600">${row.email}</td>
                     <td class="px-3 py-4 text-sm text-gray-600">${row.phone}</td>
-                    <td class="px-3 py-4">
-                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ${row.type === 'individual' ? 'badge-individual' : 'badge-company'}">
-                            ${row.type.charAt(0).toUpperCase() + row.type.slice(1)}
+                    <td class="px-3 py-4 text-sm text-gray-600">${row.designation}</td>
+                    <td class="px-3 py-4 text-sm text-center">
+                        <span class="inline-flex items-center justify-center px-3 py-1 bg-blue-100 text-blue-800 font-semibold rounded-full cursor-pointer" title="${managerTooltip}">
+                            ${managerCount}
                         </span>
+                    </td>
+                    <td class="px-3 py-4 text-sm text-center">
+                        <span class="inline-flex items-center justify-center text-blue-700 font-semibold">${row.channelPartnersCount}</span>
                     </td>
                     <td class="px-3 py-4">
                         <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ${row.status === 'active' ? 'badge-active' : 'badge-inactive'}">
                             ${row.status.charAt(0).toUpperCase() + row.status.slice(1)}
                         </span>
-                    </td>
-                    <td class="px-3 py-4">
-                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ${row.approvalStatus === 'approved' ? 'badge-approved' : row.approvalStatus === 'rejected' ? 'badge-rejected' : 'badge-pending'}">
-                            ${row.approvalStatus.charAt(0).toUpperCase() + row.approvalStatus.slice(1)}
-                        </span>
-                    </td>
-                    <td class="px-3 py-4 text-sm text-gray-600">${row.assignedCPManager || '<span class="text-gray-400 italic">Not Assigned</span>'}</td>
-                    <td class="px-3 py-4 text-sm text-gray-600">${row.cpHead || '-'}</td>
-                    <td class="px-3 py-4 text-sm text-center">
-                        <span class="inline-flex items-center justify-center text-blue-700 font-semibold">${row.leadsSubmitted}</span>
                     </td>
                     <td class="px-3 py-4 text-sm">
                         <div class="action-icons">
@@ -810,31 +759,11 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                 </svg>
                             </button>
-                            ${row.approvalStatus !== 'approved' ? `
-                            <button onclick="handleAction('approve', ${tableData.indexOf(row)})" title="Approve" class="text-green-600 hover:text-green-800">
+                            <button onclick="openResetPasswordModal(${tableData.indexOf(row)})" title="Reset Password" class="text-purple-600 hover:text-purple-800">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
                                 </svg>
-                            </button>` : ''}
-                            ${row.approvalStatus !== 'rejected' ? `
-                            <button onclick="handleAction('reject', ${tableData.indexOf(row)})" title="Reject" class="text-red-500 hover:text-red-700">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                </svg>
-                            </button>` : ''}
-                            <div class="cpm-assign-wrapper">
-                                <button onclick="toggleAssignPopup(${index}, event)" title="Assign CP Manager" class="text-purple-600 hover:text-purple-800">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                    </svg>
-                                </button>
-                                <div id="assignPopup${index}" class="cpm-assign-popup">
-                                    <select onchange="assignCPManager(${tableData.indexOf(row)}, this.value); closeAllAssignPopups();" class="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:border-green-500">
-                                        <option value="">Select Manager</option>
-                                        ${cpManagersList.map(m => `<option value="${m.name} (${m.id})" ${row.assignedCPManager === m.name + ' (' + m.id + ')' ? 'selected' : ''}>${m.name}</option>`).join('')}
-                                    </select>
-                                </div>
-                            </div>
+                            </button>
                             ${row.status === 'active' ? 
                                 `<button onclick="handleAction('deactivate', ${tableData.indexOf(row)})" title="Deactivate" class="text-orange-500 hover:text-orange-700">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -898,6 +827,7 @@
             document.getElementById('stat-inactive').textContent = inactive;
             document.getElementById('stat-approved').textContent = approved;
             document.getElementById('stat-rejected').textContent = rejected;
+            document.getElementById('stat-pending').textContent = total - approved - rejected;
         }
 
         function previousPage() {
@@ -926,6 +856,16 @@
             renderTable();
         }
 
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+        }
+
+        function formatDateShort(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        }
+
         function filterTable() {
             const searchInput = document.getElementById('searchInput').value.toLowerCase();
             
@@ -939,22 +879,10 @@
                 // Status filter
                 const matchesStatus = selectedStatuses.length === 0 || selectedStatuses.includes(row.status);
                 
-                // Approval filter
-                const matchesApproval = selectedApprovals.length === 0 || selectedApprovals.includes(row.approvalStatus);
-                
-                // Assigned Manager filter
-                const matchesAssignedManager = selectedAssignedManagers.length === 0 || selectedAssignedManagers.includes(row.assignedCPManager);
-                
-                // Location filter
-                const matchesLocation = selectedLocations.length === 0 || selectedLocations.includes(row.location);
-                
-                // Reports To (CP Head) filter
-                const matchesReportsTo = selectedReportsTo.length === 0 || selectedReportsTo.includes(row.cpHead);
-                
                 // Date range filter
                 let matchesDate = true;
                 if (dateRange.from || dateRange.to) {
-                    const rowDate = new Date(row.createdDate);
+                    const rowDate = new Date(row.dateCreated);
                     if (dateRange.from && dateRange.to) {
                         const fromDate = new Date(dateRange.from);
                         const toDate = new Date(dateRange.to);
@@ -968,7 +896,7 @@
                     }
                 }
                 
-                return matchesSearch && matchesStatus && matchesApproval && matchesAssignedManager && matchesLocation && matchesReportsTo && matchesDate;
+                return matchesSearch && matchesStatus && matchesDate;
             });
             
             currentPage = 1;
@@ -1006,61 +934,6 @@
             filterTable();
         }
 
-        function updateApprovalFilter() {
-            const checkboxes = document.querySelectorAll('.approval-checkbox');
-            selectedApprovals = Array.from(checkboxes)
-                .filter(cb => cb.checked)
-                .map(cb => cb.value);
-            
-            const label = document.getElementById('approvalFilterLabel');
-            if (selectedApprovals.length === 0) {
-                label.textContent = 'All Approvals';
-            } else if (selectedApprovals.length === 1) {
-                label.textContent = selectedApprovals[0].charAt(0).toUpperCase() + selectedApprovals[0].slice(1);
-            } else {
-                label.textContent = `${selectedApprovals.length} Selected`;
-            }
-            
-            filterTable();
-        }
-
-        function updateAssignedManagerFilter() {
-            const checkboxes = document.querySelectorAll('.assigned-manager-checkbox');
-            selectedAssignedManagers = Array.from(checkboxes)
-                .filter(cb => cb.checked)
-                .map(cb => cb.value);
-            
-            const label = document.getElementById('assignedManagerFilterLabel');
-            if (selectedAssignedManagers.length === 0) {
-                label.textContent = 'All Managers';
-            } else if (selectedAssignedManagers.length === 1) {
-                const managerName = selectedAssignedManagers[0].split(' (')[0];
-                label.textContent = managerName || 'Not Assigned';
-            } else {
-                label.textContent = `${selectedAssignedManagers.length} Selected`;
-            }
-            
-            filterTable();
-        }
-
-        function updateLocationFilter() {
-            const checkboxes = document.querySelectorAll('.location-checkbox');
-            selectedLocations = Array.from(checkboxes)
-                .filter(cb => cb.checked)
-                .map(cb => cb.value);
-            
-            const label = document.getElementById('locationFilterLabel');
-            if (selectedLocations.length === 0) {
-                label.textContent = 'All Locations';
-            } else if (selectedLocations.length === 1) {
-                label.textContent = selectedLocations[0];
-            } else {
-                label.textContent = `${selectedLocations.length} Locations`;
-            }
-            
-            filterTable();
-        }
-
         function updateDateFilter() {
             dateRange.from = document.getElementById('fromDate').value;
             dateRange.to = document.getElementById('toDate').value;
@@ -1087,29 +960,6 @@
             filterTable();
         }
 
-        function formatDateShort(dateString) {
-            const date = new Date(dateString);
-            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-        }
-
-        function updateReportsToFilter() {
-            const checkboxes = document.querySelectorAll('.reportsto-checkbox');
-            selectedReportsTo = Array.from(checkboxes)
-                .filter(cb => cb.checked)
-                .map(cb => cb.value);
-            
-            const label = document.getElementById('reportsToFilterLabel');
-            if (selectedReportsTo.length === 0) {
-                label.textContent = 'Reports To';
-            } else if (selectedReportsTo.length === 1) {
-                label.textContent = selectedReportsTo[0];
-            } else {
-                label.textContent = `${selectedReportsTo.length} Selected`;
-            }
-            
-            filterTable();
-        }
-
         function resetAllFilters() {
             // Clear search input
             document.getElementById('searchInput').value = '';
@@ -1119,31 +969,11 @@
             selectedStatuses = [];
             document.getElementById('statusFilterLabel').textContent = 'All Status';
             
-            // Clear approval checkboxes
-            document.querySelectorAll('.approval-checkbox').forEach(cb => cb.checked = false);
-            selectedApprovals = [];
-            document.getElementById('approvalFilterLabel').textContent = 'All Approvals';
-            
-            // Clear assigned manager checkboxes
-            document.querySelectorAll('.assigned-manager-checkbox').forEach(cb => cb.checked = false);
-            selectedAssignedManagers = [];
-            document.getElementById('assignedManagerFilterLabel').textContent = 'All Managers';
-            
-            // Clear location checkboxes
-            document.querySelectorAll('.location-checkbox').forEach(cb => cb.checked = false);
-            selectedLocations = [];
-            document.getElementById('locationFilterLabel').textContent = 'All Locations';
-            
             // Clear date range
             document.getElementById('fromDate').value = '';
             document.getElementById('toDate').value = '';
             dateRange = { from: '', to: '' };
             document.getElementById('dateFilterLabel').textContent = 'Date Range';
-            
-            // Clear reports to checkboxes
-            document.querySelectorAll('.reportsto-checkbox').forEach(cb => cb.checked = false);
-            selectedReportsTo = [];
-            document.getElementById('reportsToFilterLabel').textContent = 'Reports To';
             
             // Re-filter table
             filterTable();
@@ -1152,7 +982,7 @@
         function toggleUserMenu() {
             document.getElementById('userMenu').classList.toggle('active');
         }
-        
+
         function toggleMobileMenu() {
             document.getElementById('mobileMenu').classList.toggle('hidden');
         }
@@ -1164,70 +994,27 @@
             element.classList.add('active');
         }
 
-        function toggleAssignPopup(index, event) {
-            if (event) {
-                event.stopPropagation();
-            }
-            const popup = document.getElementById(`assignPopup${index}`);
-            document.querySelectorAll('.cpm-assign-popup').forEach(p => {
-                if (p !== popup) p.classList.remove('active');
-            });
-            popup.classList.toggle('active');
-        }
-
-        function closeAllAssignPopups() {
-            document.querySelectorAll('.cpm-assign-popup').forEach(p => p.classList.remove('active'));
-        }
-
         function handleAction(action, index) {
             const item = tableData[index];
             
-            if (action === 'approve') {
-                tableData[index].approvalStatus = 'approved';
-                alert(`${item.name} has been approved`);
-            } else if (action === 'reject') {
-                tableData[index].approvalStatus = 'rejected';
-                alert(`${item.name} has been rejected`);
-            } else if (action === 'activate') {
+            if (action === 'activate') {
                 tableData[index].status = 'active';
-                alert(`${item.name} has been activated`);
+                showNotification(`${item.name} has been activated`);
             } else if (action === 'deactivate') {
                 tableData[index].status = 'inactive';
-                alert(`${item.name} has been deactivated`);
+                showNotification(`${item.name} has been deactivated`);
             }
             
-            filterTable();
-        }
-
-        function assignCPManager(index, value) {
-            tableData[index].assignedCPManager = value;
-            tableData[index].cpHead = getCPHeadFromManager(value);
-            if (value) {
-                alert(`${tableData[index].name} has been assigned to ${value}`);
-            }
             filterTable();
         }
 
         function viewRecord(index) {
             const record = tableData[index];
             
-            document.getElementById('modalTitle').textContent = 'View Channel Partner';
             document.getElementById('editIndex').value = index;
             document.getElementById('viewMode').value = 'true';
             
-            document.querySelector(`input[name="partnerType"][value="${record.type}"]`).checked = true;
-            document.getElementById('name').value = record.name;
-            document.getElementById('email').value = record.email;
-            document.getElementById('phone').value = record.phone;
-            document.getElementById('reraNo').value = record.reraNo;
-            document.getElementById('panNo').value = record.panNo;
-            document.getElementById('gstNo').value = record.gstNo;
-            document.getElementById('location').value = record.location;
-            document.getElementById('status').value = record.status;
-            document.getElementById('assignedCPManager').value = record.assignedCPManager || '';
-            document.getElementById('address').value = record.address;
-            
-            // Disable all form fields
+            // Disable all form fields first
             document.querySelectorAll('#addForm input, #addForm select, #addForm textarea').forEach(field => {
                 field.disabled = true;
             });
@@ -1238,6 +1025,17 @@
                     Close
                 </button>
             `;
+            
+            // Now set the modal title
+            document.getElementById('modalTitle').textContent = 'View Channel Partner';
+            
+            // Populate form fields
+            document.getElementById('name').value = record.name;
+            document.getElementById('email').value = record.email;
+            document.getElementById('phone').value = record.phone;
+            document.getElementById('designation').value = record.designation;
+            document.getElementById('role').value = record.role;
+            document.getElementById('status').value = record.status;
             
             openAddModal();
         }
@@ -1268,17 +1066,12 @@
             document.getElementById('submitBtnText').textContent = 'Update';
             
             // Populate form fields
-            document.querySelector(`input[name="partnerType"][value="${record.type}"]`).checked = true;
             document.getElementById('name').value = record.name;
             document.getElementById('email').value = record.email;
             document.getElementById('phone').value = record.phone;
-            document.getElementById('reraNo').value = record.reraNo;
-            document.getElementById('panNo').value = record.panNo;
-            document.getElementById('gstNo').value = record.gstNo;
-            document.getElementById('location').value = record.location;
+            document.getElementById('designation').value = record.designation;
+            document.getElementById('role').value = record.role;
             document.getElementById('status').value = record.status;
-            document.getElementById('assignedCPManager').value = record.assignedCPManager || '';
-            document.getElementById('address').value = record.address;
             
             openAddModal();
         }
@@ -1321,39 +1114,161 @@
                 name: formData.get('name'),
                 email: formData.get('email'),
                 phone: formData.get('phone'),
-                type: formData.get('partnerType'),
-                reraNo: formData.get('reraNo'),
-                panNo: formData.get('panNo'),
-                gstNo: formData.get('gstNo'),
-                location: formData.get('location'),
-                status: formData.get('status'),
-                address: formData.get('address'),
-                assignedCPManager: formData.get('assignedCPManager') || ''
+                designation: formData.get('designation'),
+                role: 'Head',
+                reportsTo: null,
+                status: formData.get('status')
             };
             
             if (editIndex !== '') {
                 const index = parseInt(editIndex);
                 tableData[index] = {
                     ...tableData[index],
-                    ...entry,
-                    cpHead: getCPHeadFromManager(entry.assignedCPManager)
+                    ...entry
                 };
-                alert('Channel Partner updated successfully!');
+                showNotification('CP Head updated successfully!');
             } else {
                 const newEntry = {
-                    id: 'CP' + String(tableData.length + 1).padStart(3, '0'),
+                    id: 'CPM' + String(tableData.length + 1).padStart(3, '0'),
                     ...entry,
-                    leadsSubmitted: 0,
-                    approvalStatus: 'pending',
-                    cpHead: getCPHeadFromManager(entry.assignedCPManager),
-                    createdDate: new Date().toISOString().split('T')[0]
+                    dateCreated: new Date().toISOString().split('T')[0],
+                    channelPartnersCount: 0
                 };
                 tableData.unshift(newEntry);
-                alert('Channel Partner added successfully!');
+                showNotification('CP Head added successfully!');
             }
             
             filterTable();
             closeAddModal();
+        }
+
+        // Password Reset Functions
+        function openResetPasswordModal(index) {
+            const record = tableData[index];
+            document.getElementById('resetUserIndex').value = index;
+            document.getElementById('resetUserName').textContent = record.name;
+            document.getElementById('resetUserEmail').textContent = record.email;
+            document.getElementById('resetPasswordModal').classList.add('active');
+            document.getElementById('resetPasswordForm').reset();
+            document.getElementById('passwordStrengthBar').style.width = '0%';
+            document.getElementById('passwordStrengthBar').style.backgroundColor = '#e5e7eb';
+            document.getElementById('passwordStrengthText').textContent = 'Password strength: None';
+            document.getElementById('passwordMatchText').textContent = '';
+        }
+
+        function closeResetPasswordModal() {
+            document.getElementById('resetPasswordModal').classList.remove('active');
+            document.getElementById('resetPasswordForm').reset();
+        }
+
+        function togglePasswordVisibility(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>';
+            } else {
+                input.type = 'password';
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>';
+            }
+        }
+
+        function checkPasswordStrength() {
+            const password = document.getElementById('newPassword').value;
+            const strengthBar = document.getElementById('passwordStrengthBar');
+            const strengthText = document.getElementById('passwordStrengthText');
+            
+            let strength = 0;
+            let strengthLabel = 'None';
+            let color = '#e5e7eb';
+            
+            if (password.length >= 8) strength += 25;
+            if (password.length >= 12) strength += 25;
+            if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength += 20;
+            if (/[0-9]/.test(password)) strength += 15;
+            if (/[^a-zA-Z0-9]/.test(password)) strength += 15;
+            
+            if (strength <= 25) {
+                strengthLabel = 'Weak';
+                color = '#ef4444';
+            } else if (strength <= 50) {
+                strengthLabel = 'Fair';
+                color = '#f59e0b';
+            } else if (strength <= 75) {
+                strengthLabel = 'Good';
+                color = '#3b82f6';
+            } else {
+                strengthLabel = 'Strong';
+                color = '#10b981';
+            }
+            
+            strengthBar.style.width = strength + '%';
+            strengthBar.style.backgroundColor = color;
+            strengthText.textContent = `Password strength: ${strengthLabel}`;
+            strengthText.style.color = color;
+            
+            checkPasswordMatch();
+        }
+
+        function checkPasswordMatch() {
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const matchText = document.getElementById('passwordMatchText');
+            
+            if (confirmPassword.length === 0) {
+                matchText.textContent = '';
+                return;
+            }
+            
+            if (newPassword === confirmPassword) {
+                matchText.textContent = '✓ Passwords match';
+                matchText.style.color = '#10b981';
+            } else {
+                matchText.textContent = '✗ Passwords do not match';
+                matchText.style.color = '#ef4444';
+            }
+        }
+
+        function handleResetPassword(event) {
+            event.preventDefault();
+            
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const userIndex = parseInt(document.getElementById('resetUserIndex').value);
+            
+            if (newPassword !== confirmPassword) {
+                alert('Passwords do not match!');
+                return;
+            }
+            
+            if (newPassword.length < 8) {
+                alert('Password must be at least 8 characters long!');
+                return;
+            }
+            
+            const user = tableData[userIndex];
+            
+            // In a real application, this would make an API call to reset the password
+            // For this demo, we'll just show a success message
+            showNotification(`Password reset successfully for ${user.name}. A confirmation email has been sent to ${user.email}.`);
+            
+            closeResetPasswordModal();
+        }
+
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            const messageEl = document.getElementById('notificationMessage');
+            messageEl.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                hideNotification();
+            }, 5000);
+        }
+
+        function hideNotification() {
+            document.getElementById('notification').classList.remove('show');
         }
 
         function handleLogout() {
@@ -1363,17 +1278,9 @@
         }
 
         document.addEventListener('click', function(event) {
-            // Close dropdowns only if clicking outside
-            if (!event.target.closest('.relative') && !event.target.closest('button') && !event.target.closest('.cpm-assign-wrapper')) {
+            if (!event.target.closest('.relative') && !event.target.closest('button')) {
                 document.querySelectorAll('.dropdown-menu').forEach(menu => {
                     menu.classList.remove('active');
-                });
-            }
-            
-            // Close assign popups only if clicking outside the wrapper
-            if (!event.target.closest('.cpm-assign-wrapper')) {
-                document.querySelectorAll('.cpm-assign-popup').forEach(popup => {
-                    popup.classList.remove('active');
                 });
             }
         });
@@ -1384,17 +1291,13 @@
             }
         });
 
-        function populateCPManagerDropdown() {
-            const select = document.getElementById('assignedCPManager');
-            cpManagersList.forEach(m => {
-                const option = document.createElement('option');
-                option.value = m.name + ' (' + m.id + ')';
-                option.textContent = m.name;
-                select.appendChild(option);
-            });
-        }
-        populateCPManagerDropdown();
+        document.getElementById('resetPasswordModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeResetPasswordModal();
+            }
+        });
 
+        // Initialize on page load
         renderTable();
     </script>
 </body>
