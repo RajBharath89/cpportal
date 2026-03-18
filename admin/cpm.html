@@ -5,1237 +5,844 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CP Managers - CoEvolve Organization</title>
     <link rel="apple-touch-icon" href="https://coevolvegroup.com/assets/images/fav.png" />
-   <link rel="shortcut icon" type="image/x-icon" href="https://coevolvegroup.com/assets/images/fav.png" />
+    <link rel="shortcut icon" type="image/x-icon" href="https://coevolvegroup.com/assets/images/fav.png" />
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        
-        html, body {
-            font-family: 'Inter', sans-serif;
-            height: 100%;
-            margin: 0;
-            overflow: hidden;
-        }
-        
-        .main-wrapper {
-            display: flex;
-            height: calc(100vh - 68px);
-            margin-top: 68px;
-        }
-        
-        .main-content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 1rem;
-        }
-        
-        @media (min-width: 768px) {
-            .main-content {
-                padding: 2rem 2rem 1rem 2rem;
-            }
-        }
-        
-        .table-container {
-            overflow: hidden;
-        }
-        
-        .table-scroll {
-            overflow-x: auto;
-            overflow-y: visible;
-            -webkit-overflow-scrolling: touch;
-        }
-        
-        .table-scroll table {
-            min-width: 1000px;
-        }
-        
+
+        html, body { font-family: 'Inter', sans-serif; height: 100%; margin: 0; overflow: hidden; }
+
+        .main-wrapper { display: flex; height: calc(100vh - 68px); margin-top: 68px; }
+        .main-content { flex: 1; overflow-y: auto; padding: 1rem; }
+        @media (min-width: 768px) { .main-content { padding: 2rem 2rem 1rem 2rem; } }
+
+        .table-scroll { overflow-x: auto; overflow-y: visible; -webkit-overflow-scrolling: touch; }
+        .table-scroll table { min-width: 900px; }
+
+        /* ── Dropdowns: visibility-based so they animate AND stay interactive ── */
         .dropdown-menu {
-            display: none;
+            visibility: hidden;
             opacity: 0;
-            transform: translateY(-10px);
-            transition: all 0.3s ease;
-        }
-        
-        .dropdown-menu.active {
-            display: block;
-            opacity: 1;
-            transform: translateY(0);
-        }
-        
-        .action-menu {
-            display: none;
-            opacity: 0;
-            transform: translateY(-10px);
-            transition: all 0.3s ease;
-        }
-        
-        .action-menu.active {
-            display: block;
-            opacity: 1;
-            transform: translateY(0);
-        }
-        
-        .modal {
-            display: none;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        
-        .modal.active {
-            display: flex;
-            opacity: 1;
-        }
-        
-        .modal-content {
-            transform: scale(0.9);
-            transition: transform 0.3s ease;
-        }
-        
-        .modal.active .modal-content {
-            transform: scale(1);
-        }
-        
-        .nav-item {
-            transition: all 0.3s ease;
-            position: relative;
-            border-bottom: 3px solid transparent;
-        }
-        
-        .nav-item:hover {
-            color: #95c13d;
-            border-bottom-color: #95c13d;
-        }
-        
-        .nav-item.active {
-            color: #95c13d;
-            border-bottom-color: #95c13d;
-        }
-        
-        .badge-active {
-            background: #f0f9e8;
-            color: #166534;
-        }
-        
-        .badge-inactive {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-        
-        .badge-approved {
-            background: #dcfce7;
-            color: #166534;
-        }
-        
-        .badge-rejected {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-        
-        .action-icons {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .notification {
-            position: fixed;
-            top: 80px;
-            right: 20px;
+            pointer-events: none;
+            transform: translateY(-6px);
+            transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s;
+            position: absolute;
             z-index: 9999;
-            transform: translateX(400px);
-            transition: transform 0.3s ease;
         }
-        
-        .notification.show {
-            transform: translateX(0);
+        .dropdown-menu.active {
+            visibility: visible;
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
         }
-        
-        .password-strength {
-            height: 4px;
-            background: #e5e7eb;
-            border-radius: 2px;
-            margin-top: 8px;
-            overflow: hidden;
+
+        .modal { display: none; opacity: 0; transition: opacity 0.3s ease; }
+        .modal.active { display: flex; opacity: 1; }
+        .modal-content { transform: scale(0.9); transition: transform 0.3s ease; }
+        .modal.active .modal-content { transform: scale(1); }
+
+        .nav-item { transition: all 0.3s ease; position: relative; border-bottom: 3px solid transparent; }
+        .nav-item:hover { color: #95c13d; border-bottom-color: #95c13d; }
+        .nav-item.active { color: #95c13d; border-bottom-color: #95c13d; }
+
+        .badge-active   { background: #f0f9e8; color: #166534; }
+        .badge-inactive { background: #fee2e2; color: #991b1b; }
+
+        .action-icons { display: flex; align-items: center; gap: 0.5rem; }
+
+        .notification {
+            position: fixed; top: 80px; right: 20px; z-index: 9999;
+            transform: translateX(400px); transition: transform 0.3s ease;
         }
-        
-        .password-strength-bar {
-            height: 100%;
-            transition: width 0.3s ease, background-color 0.3s ease;
-        }
+        .notification.show { transform: translateX(0); }
+
+        .password-strength { height: 4px; background: #e5e7eb; border-radius: 2px; margin-top: 8px; overflow: hidden; }
+        .password-strength-bar { height: 100%; transition: width 0.3s ease, background-color 0.3s ease; }
+
+        .no-scrollbar { scrollbar-width: none; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body class="bg-gray-50">
-    <!-- Top Header -->
-    <header class="bg-gray-800 shadow-sm fixed top-0 left-0 right-0 z-40 border-t-4" style="border-top-color: #95c13d;">
-        <div class="flex items-center justify-between px-4 py-3">
-            <!-- Mobile Menu Button and Logo -->
-            <div class="flex items-center gap-3">
-                <button onclick="toggleMobileMenu()" class="md:hidden text-white hover:text-gray-300">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-                    </svg>
-                </button>
-                
-                <!-- Logo -->
-                <div class="flex items-center text-white">
-                    <img src="https://coevolvegroup.com/assets/images/logos/primary-logo.png" alt="CoEvolve Logo" class="h-8 md:h-10 mr-2 md:mr-3">
-                    <span class="font-semibold text-sm md:text-base">Admin</span>
-                </div>
-            </div>
 
-            <!-- Navigation Bar - Hidden on mobile -->
-            <nav class="hidden md:flex items-center space-x-1">
-                <a href="cphead.html" class="nav-item flex items-center gap-2 px-4 py-2 text-gray-200 font-medium text-sm">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
-                    </svg>
-                    CP Heads
-                </a>
-                
-                <a href="cpm.html" class="nav-item active flex items-center gap-2 px-4 py-2 text-gray-200 font-medium text-sm">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
-                    </svg>
-                    CP Managers
-                </a>
-                
-                <a href="cp.html" class="nav-item flex items-center gap-2 px-4 py-2 text-gray-200 font-medium text-sm">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                    </svg>
-                    Channel Partners
-                </a>
-                
-                <a href="leads.html" class="nav-item flex items-center gap-2 px-4 py-2 text-gray-200 font-medium text-sm">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                    </svg>
-                    Leads
-                </a>
-            </nav>
-
-            <!-- User Avatar -->
-            <div class="relative">
-                <button onclick="toggleUserMenu()" class="flex items-center gap-2 hover:bg-gray-900 rounded-lg px-2 md:px-3 py-2 transition-colors">
-                    <div class="w-8 h-8 md:w-9 md:h-9 rounded-full flex items-center justify-center text-white font-semibold text-sm" style="background-color: #95c13d;">
-                        AU
-                    </div>
-                    <div class="hidden lg:block text-left">
-                        <div class="text-sm font-semibold text-gray-100">Admin User</div>
-                    </div>
-                    <svg class="w-4 h-4 text-gray-400 hidden md:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                    </svg>
-                </button>
-                
-                <!-- Dropdown Menu -->
-                <div id="userMenu" class="dropdown-menu absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1">
-                    <a href="#" onclick="handleLogout()" class="flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                        </svg>
-                        Logout
-                    </a>
-                </div>
+<!-- ═══════════════════════ HEADER ═══════════════════════ -->
+<header class="bg-gray-800 shadow-sm fixed top-0 left-0 right-0 z-40 border-t-4" style="border-top-color:#95c13d;">
+    <div class="flex items-center justify-between px-4 py-3">
+        <div class="flex items-center gap-3">
+            <button onclick="toggleMobileMenu()" class="md:hidden text-white hover:text-gray-300">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+            </button>
+            <div class="flex items-center text-white">
+                <img src="https://coevolvegroup.com/assets/images/logos/primary-logo.png" alt="CoEvolve Logo" class="h-8 md:h-10 mr-2 md:mr-3">
+                <span class="font-semibold text-sm md:text-base">Admin</span>
             </div>
         </div>
-        
-        <!-- Mobile Navigation Menu -->
-        <div id="mobileMenu" class="md:hidden hidden bg-gray-700 border-t border-gray-600">
-            <nav class="px-4 py-2 space-y-1">
-                <a href="cphead.html" class="flex items-center gap-2 px-3 py-2 text-gray-200 font-medium text-sm hover:bg-gray-600 rounded">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
-                    </svg>
-                    CP Heads
-                </a>
-                
-                <a href="cpm.html" class="flex items-center gap-2 px-3 py-2 text-gray-200 font-medium text-sm bg-gray-600 rounded">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
-                    </svg>
-                    CP Managers
-                </a>
-                
-                <a href="cp.html" class="flex items-center gap-2 px-3 py-2 text-gray-200 font-medium text-sm hover:bg-gray-600 rounded">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                    </svg>
-                    Channel Partners
-                </a>
-                
-                <a href="leads.html" class="flex items-center gap-2 px-3 py-2 text-gray-200 font-medium text-sm hover:bg-gray-600 rounded">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                    </svg>
-                    Leads
-                </a>
-            </nav>
-        </div>
-    </header>
 
-    <div class="main-wrapper">
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Title and Stats Row -->
-            <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4 md:mb-6 gap-3 md:gap-4">
-                <div class="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
-                    <h1 class="text-xl md:text-2xl font-bold text-gray-900">CP Managers</h1>
-                    <div class="flex items-center gap-2 md:gap-3 text-xs md:text-sm text-gray-600">
-                        <span>Total: <span class="font-semibold text-gray-900" id="stat-total">0</span></span>
-                        <span class="text-gray-300">|</span>
-                        <span>Active: <span class="font-semibold text-green-600" id="stat-active">0</span></span>
-                        <span class="text-gray-300">|</span>
-                        <span>Inactive: <span class="font-semibold text-red-600" id="stat-inactive">0</span></span>
-                    </div>
-                </div>
-                
-                <button onclick="openAddModal()" class="flex items-center justify-center gap-2 px-4 md:px-5 py-2 font-semibold rounded-full transition-all text-xs md:text-sm whitespace-nowrap w-full md:w-auto" style="background: linear-gradient(135deg, #95c13d 0%, #7ba82d 100%); color: #ffffff;" onmouseover="this.style.background='linear-gradient(135deg, #a8d955 0%, #98c945 100%)'; this.style.transform='scale(1.02)';" onmouseout="this.style.background='linear-gradient(135deg, #95c13d 0%, #7ba82d 100%)'; this.style.transform='scale(1)';">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                    </svg>
-                    Add CP Manager
-                </button>
-            </div>
+        <nav class="hidden md:flex items-center space-x-1">
+            <a href="cphead.html" class="nav-item flex items-center gap-2 px-4 py-2 text-gray-200 font-medium text-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                CP Heads
+            </a>
+            <a href="cpm.html" class="nav-item active flex items-center gap-2 px-4 py-2 text-gray-200 font-medium text-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                CP Managers
+            </a>
+            <a href="cp.html" class="nav-item flex items-center gap-2 px-4 py-2 text-gray-200 font-medium text-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                Channel Partners
+            </a>
+            <a href="leads.html" class="nav-item flex items-center gap-2 px-4 py-2 text-gray-200 font-medium text-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                Leads
+            </a>
+        </nav>
 
-            <!-- Data Table -->
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                <div class="px-3 md:px-4 py-3 border-b border-gray-200">
-                    <div class="flex flex-wrap items-center gap-2">
-                        <!-- Search Bar -->
-                        <div class="w-full md:flex-1 md:min-w-[250px]">
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                                    </svg>
-                                </div>
-                                <input 
-                                    type="text" 
-                                    id="searchInput"
-                                    onkeyup="filterTable()"
-                                    class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500 text-sm" 
-                                    placeholder="Search by name, email, phone..."
-                                >
-                            </div>
-                        </div>
-                        
-                        <!-- Status Filter -->
-                        <div class="w-[48%] md:w-auto md:min-w-[140px] relative">
-                            <button 
-                                type="button"
-                                onclick="toggleDropdown('statusDropdown')"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500 text-sm text-left flex items-center justify-between bg-white"
-                            >
-                                <span id="statusFilterLabel" class="truncate">All Status</span>
-                                <svg class="w-4 h-4 text-gray-400 ml-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                                </svg>
-                            </button>
-                            <div id="statusDropdown" class="dropdown-menu absolute z-50 mt-1 w-48 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                                <div class="p-2">
-                                    <label class="flex items-center px-3 py-2 hover:bg-gray-50 rounded cursor-pointer">
-                                        <input type="checkbox" value="active" onchange="updateStatusFilter()" class="status-checkbox w-4 h-4 text-green-600 rounded">
-                                        <span class="ml-2 text-sm text-gray-700 whitespace-nowrap">Active</span>
-                                    </label>
-                                    <label class="flex items-center px-3 py-2 hover:bg-gray-50 rounded cursor-pointer">
-                                        <input type="checkbox" value="inactive" onchange="updateStatusFilter()" class="status-checkbox w-4 h-4 text-green-600 rounded">
-                                        <span class="ml-2 text-sm text-gray-700 whitespace-nowrap">Inactive</span>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Date Range Filter -->
-                        <div class="w-[48%] md:w-auto md:min-w-[160px] relative">
-                            <button 
-                                type="button"
-                                onclick="toggleDropdown('dateDropdown')"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500 text-sm text-left flex items-center justify-between bg-white"
-                            >
-                                <span id="dateFilterLabel" class="truncate">Date Range</span>
-                                <svg class="w-4 h-4 text-gray-400 ml-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                                </svg>
-                            </button>
-                            <div id="dateDropdown" class="dropdown-menu absolute z-50 mt-1 w-64 bg-white border border-gray-300 rounded-lg shadow-lg p-3">
-                                <div class="space-y-3">
-                                    <div>
-                                        <label class="block text-xs font-semibold text-gray-700 mb-1">From Date</label>
-                                        <input type="date" id="fromDate" onchange="updateDateFilter()" class="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:border-green-500">
-                                    </div>
-                                    <div>
-                                        <label class="block text-xs font-semibold text-gray-700 mb-1">To Date</label>
-                                        <input type="date" id="toDate" onchange="updateDateFilter()" class="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:border-green-500">
-                                    </div>
-                                    <button onclick="clearDateFilter()" class="w-full px-3 py-1.5 text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded hover:bg-gray-50">
-                                        Clear Dates
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Reset Filters Button -->
-                        <button onclick="resetAllFilters()" class="w-full md:w-auto flex items-center justify-center gap-2 px-3 py-2 font-semibold rounded-lg transition-all text-sm whitespace-nowrap bg-gray-100 hover:bg-gray-200 text-gray-700">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                            </svg>
-                            Reset
-                        </button>
-                    </div>
-                </div>
-                <div class="table-scroll">
-                    <table class="w-full">
-                        <thead class="bg-gray-50 border-b border-gray-200 sticky top-0">
-                            <tr>
-                                <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">ID</th>
-                                <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Name</th>
-                                <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Email</th>
-                                <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Phone</th>
-                                <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Designation</th>
-                                <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">CP Managers</th>
-                                <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Channel Partners</th>
-                                <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
-                                <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tableBody" class="divide-y divide-gray-200">
-                        </tbody>
-                    </table>
-                </div>
-                
-                <!-- Pagination -->
-                <div class="px-4 py-2 border-t border-gray-200 flex flex-col md:flex-row items-center justify-between gap-2">
-                    <div class="flex items-center gap-2 text-xs text-gray-600">
-                        <span>Records per page:</span>
-                        <select id="recordsPerPage" onchange="changeRecordsPerPage()" class="px-2 py-1 border border-gray-300 rounded-lg focus:outline-none text-xs">
-                            <option value="10">10</option>
-                            <option value="20">20</option>
-                            <option value="50">50</option>
-                            <option value="100">100</option>
-                        </select>
-                    </div>
-                    <div class="text-xs text-gray-600">
-                        Showing <span class="font-medium" id="showingStart">1</span> to <span class="font-medium" id="showingEnd">10</span> of <span class="font-medium" id="totalRecords">0</span> results
-                    </div>
-                    <div class="flex gap-1 flex-wrap justify-center">
-                        <button id="prevBtn" onclick="previousPage()" class="px-2 py-1 border border-gray-300 rounded-lg text-xs hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">Previous</button>
-                        <div id="paginationNumbers" class="flex gap-1"></div>
-                        <button id="nextBtn" onclick="nextPage()" class="px-2 py-1 border border-gray-300 rounded-lg text-xs hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">Next</button>
-                    </div>
-                </div>
+        <div class="relative">
+            <button onclick="toggleUserMenu()" class="flex items-center gap-2 hover:bg-gray-900 rounded-lg px-2 md:px-3 py-2 transition-colors">
+                <div class="w-8 h-8 md:w-9 md:h-9 rounded-full flex items-center justify-center text-white font-semibold text-sm" style="background-color:#95c13d;">AU</div>
+                <div class="hidden lg:block text-left"><div class="text-sm font-semibold text-gray-100">Admin User</div></div>
+                <svg class="w-4 h-4 text-gray-400 hidden md:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div id="userMenu" class="dropdown-menu right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1">
+                <a href="#" onclick="handleLogout()" class="flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                    Logout
+                </a>
             </div>
-        </main>
-    </div>
-
-    <!-- Add/Edit Modal -->
-    <div id="addModal" class="modal fixed inset-0 bg-black bg-opacity-50 z-50 items-center justify-center p-4">
-        <div class="modal-content bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-                <h2 id="modalTitle" class="text-xl font-bold text-gray-900">Add New CP Manager</h2>
-                <button onclick="closeAddModal()" class="text-gray-400 hover:text-gray-600">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
-                </button>
-            </div>
-            
-            <form id="addForm" onsubmit="handleSubmit(event)" class="p-6">
-                <input type="hidden" id="editIndex" value="">
-                <input type="hidden" id="viewMode" value="false">
-                
-                <div class="grid md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Name <span class="text-red-500">*</span></label>
-                        <input type="text" id="name" name="name" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500" required>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Email <span class="text-red-500">*</span></label>
-                        <input type="email" id="email" name="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500" required>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Phone <span class="text-red-500">*</span></label>
-                        <input type="tel" id="phone" name="phone" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500" pattern="[0-9+\s-]+" required>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Designation <span class="text-red-500">*</span></label>
-                        <input type="text" id="designation" name="designation" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500" required>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Role <span class="text-red-500">*</span></label>
-                        <select id="role" name="role" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500" required onchange="handleRoleChange()">
-                            <option value="Head">Head</option>
-                        </select>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Status <span class="text-red-500">*</span></label>
-                        <select id="status" name="status" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500" required>
-                            <option value="active">Active</option>
-                            <option value="inactive">Inactive</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="flex gap-3 mt-6" id="modalButtons">
-                    <button type="submit" id="submitBtn" class="flex-1 text-white px-4 py-2 rounded-lg font-medium transition-colors" style="background: linear-gradient(135deg, #95c13d 0%, #7ba82d 100%);">
-                        <span id="submitBtnText">Save</span>
-                    </button>
-                    <button type="button" onclick="closeAddModal()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors">
-                        Cancel
-                    </button>
-                </div>
-            </form>
         </div>
     </div>
 
-    <!-- Reset Password Modal -->
-    <div id="resetPasswordModal" class="modal fixed inset-0 bg-black bg-opacity-50 z-50 items-center justify-center p-4">
-        <div class="modal-content bg-white rounded-xl shadow-2xl max-w-md w-full">
-            <div class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-                <h2 class="text-xl font-bold text-gray-900">Reset Password</h2>
-                <button onclick="closeResetPasswordModal()" class="text-gray-400 hover:text-gray-600">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
+    <!-- Mobile Nav -->
+    <div id="mobileMenu" class="md:hidden hidden bg-gray-700 border-t border-gray-600">
+        <nav class="px-4 py-2 space-y-1">
+            <a href="cphead.html" class="flex items-center gap-2 px-3 py-2 text-gray-200 font-medium text-sm hover:bg-gray-600 rounded">CP Heads</a>
+            <a href="cpm.html"    class="flex items-center gap-2 px-3 py-2 text-gray-200 font-medium text-sm bg-gray-600 rounded">CP Managers</a>
+            <a href="cp.html"     class="flex items-center gap-2 px-3 py-2 text-gray-200 font-medium text-sm hover:bg-gray-600 rounded">Channel Partners</a>
+            <a href="leads.html"  class="flex items-center gap-2 px-3 py-2 text-gray-200 font-medium text-sm hover:bg-gray-600 rounded">Leads</a>
+        </nav>
+    </div>
+</header>
+
+<!-- ═══════════════════════ MAIN ═══════════════════════ -->
+<div class="main-wrapper">
+<main class="main-content">
+
+    <!-- Title & Stats -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4 md:mb-6 gap-3 md:gap-4">
+        <div class="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
+            <h1 class="text-xl md:text-2xl font-bold text-gray-900">CP Managers</h1>
+            <div class="flex items-center gap-2 md:gap-3 text-xs md:text-sm text-gray-600">
+                <span>Total: <span class="font-semibold text-gray-900" id="stat-total">0</span></span>
+                <span class="text-gray-300">|</span>
+                <span>Active: <span class="font-semibold text-green-600" id="stat-active">0</span></span>
+                <span class="text-gray-300">|</span>
+                <span>Inactive: <span class="font-semibold text-red-600" id="stat-inactive">0</span></span>
+            </div>
+        </div>
+        <button onclick="openAddModal()" class="flex items-center justify-center gap-2 px-4 md:px-5 py-2 font-semibold rounded-full transition-all text-xs md:text-sm whitespace-nowrap w-full md:w-auto" style="background:linear-gradient(135deg,#95c13d 0%,#7ba82d 100%);color:#fff;">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            Add CP Manager
+        </button>
+    </div>
+
+    <!-- Table Card -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+
+        <!-- ── Filter row ── -->
+        <div class="px-3 md:px-4 py-3 border-b border-gray-200">
+            <div class="flex items-center gap-2">
+
+                <!-- Search — flex-1 fills leftover space -->
+                <div class="relative flex-1 min-w-0">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    </div>
+                    <input type="text" id="searchInput" onkeyup="filterTable()"
+                        class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500 text-sm"
+                        placeholder="Search by name, email, phone...">
+                </div>
+
+                <!-- Status -->
+                <div class="filter-dropdown-wrap relative flex-shrink-0">
+                    <button type="button" onclick="toggleDropdown('statusDropdown', event)"
+                        class="flex items-center gap-1.5 px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white whitespace-nowrap hover:border-green-400 transition-colors">
+                        <span id="statusFilterLabel">All Status</span>
+                        <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <div id="statusDropdown" class="dropdown-menu mt-1 w-44 bg-white border border-gray-300 rounded-lg shadow-lg">
+                        <div class="px-3 pt-2 pb-1 border-b border-gray-100"><span class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</span></div>
+                        <div class="p-2">
+                            <label class="flex items-center px-2 py-1.5 hover:bg-gray-50 rounded cursor-pointer">
+                                <input type="checkbox" value="active" onchange="updateMultiFilter('status')" class="status-checkbox w-4 h-4 rounded accent-green-600">
+                                <span class="ml-2 text-sm text-gray-700">Active</span>
+                            </label>
+                            <label class="flex items-center px-2 py-1.5 hover:bg-gray-50 rounded cursor-pointer">
+                                <input type="checkbox" value="inactive" onchange="updateMultiFilter('status')" class="status-checkbox w-4 h-4 rounded accent-green-600">
+                                <span class="ml-2 text-sm text-gray-700">Inactive</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reporting Manager (CP Head) -->
+                <div class="filter-dropdown-wrap relative flex-shrink-0">
+                    <button type="button" onclick="toggleDropdown('reportingDropdown', event)"
+                        class="flex items-center gap-1.5 px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white whitespace-nowrap hover:border-green-400 transition-colors">
+                        <span id="reportingFilterLabel">Reporting Manager</span>
+                        <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <div id="reportingDropdown" class="dropdown-menu mt-1 w-56 bg-white border border-gray-300 rounded-lg shadow-lg">
+                        <div class="px-3 pt-2 pb-1 border-b border-gray-100"><span class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Reporting Manager</span></div>
+                        <div class="p-2" id="reportingCheckboxList"><!-- populated by JS --></div>
+                    </div>
+                </div>
+
+                <!-- Date Range -->
+                <div class="filter-dropdown-wrap relative flex-shrink-0">
+                    <button type="button" onclick="toggleDropdown('dateDropdown', event)"
+                        class="flex items-center gap-1.5 px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white whitespace-nowrap hover:border-green-400 transition-colors">
+                        <span id="dateFilterLabel">Date Range</span>
+                        <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <div id="dateDropdown" class="dropdown-menu mt-1 w-64 bg-white border border-gray-300 rounded-lg shadow-lg p-3">
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">From Date</label>
+                                <input type="date" id="fromDate" onchange="updateDateFilter()" class="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:border-green-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">To Date</label>
+                                <input type="date" id="toDate" onchange="updateDateFilter()" class="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:border-green-500">
+                            </div>
+                            <button onclick="clearDateFilter()" class="w-full px-3 py-1.5 text-sm text-gray-600 border border-gray-300 rounded hover:bg-gray-50">Clear Dates</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reset — pinned right -->
+                <button onclick="resetAllFilters()" class="flex-shrink-0 ml-auto flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold whitespace-nowrap bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                    Reset
                 </button>
             </div>
-            
-            <form id="resetPasswordForm" onsubmit="handleResetPassword(event)" class="p-6">
-                <input type="hidden" id="resetUserIndex" value="">
-                
-                <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                    <p class="text-sm text-blue-800">
-                        <span class="font-semibold">User:</span> <span id="resetUserName"></span>
-                    </p>
-                    <p class="text-sm text-blue-800 mt-1">
-                        <span class="font-semibold">Email:</span> <span id="resetUserEmail"></span>
-                    </p>
-                </div>
-                
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">New Password <span class="text-red-500">*</span></label>
-                        <div class="relative">
-                            <input 
-                                type="password" 
-                                id="newPassword" 
-                                name="newPassword" 
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500" 
-                                required
-                                minlength="8"
-                                oninput="checkPasswordStrength()"
-                            >
-                            <button 
-                                type="button" 
-                                onclick="togglePasswordVisibility('newPassword', 'toggleNewPassword')"
-                                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                            >
-                                <svg id="toggleNewPassword" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                </svg>
-                            </button>
-                        </div>
-                        <div class="password-strength">
-                            <div id="passwordStrengthBar" class="password-strength-bar" style="width: 0%; background-color: #e5e7eb;"></div>
-                        </div>
-                        <p id="passwordStrengthText" class="text-xs text-gray-500 mt-1">Password strength: None</p>
-                        <p class="text-xs text-gray-500 mt-1">Minimum 8 characters</p>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Confirm Password <span class="text-red-500">*</span></label>
-                        <div class="relative">
-                            <input 
-                                type="password" 
-                                id="confirmPassword" 
-                                name="confirmPassword" 
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500" 
-                                required
-                                minlength="8"
-                                oninput="checkPasswordMatch()"
-                            >
-                            <button 
-                                type="button" 
-                                onclick="togglePasswordVisibility('confirmPassword', 'toggleConfirmPassword')"
-                                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                            >
-                                <svg id="toggleConfirmPassword" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                </svg>
-                            </button>
-                        </div>
-                        <p id="passwordMatchText" class="text-xs text-gray-500 mt-1"></p>
-                    </div>
-                </div>
-                
-                <div class="flex gap-3 mt-6">
-                    <button type="submit" class="flex-1 text-white px-4 py-2 rounded-lg font-medium transition-colors" style="background: linear-gradient(135deg, #95c13d 0%, #7ba82d 100%);">
-                        Reset Password
-                    </button>
-                    <button type="button" onclick="closeResetPasswordModal()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors">
-                        Cancel
-                    </button>
-                </div>
-            </form>
+
+            <!-- Active filter tags -->
+            <div id="activeFilterTags" class="flex flex-wrap gap-1.5 mt-2"></div>
+        </div>
+
+        <!-- ── Table ── -->
+        <div class="table-scroll">
+            <table class="w-full">
+                <thead class="bg-gray-50 border-b border-gray-200">
+                    <tr>
+                        <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">ID</th>
+                        <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Name</th>
+                        <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Email</th>
+                        <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Phone</th>
+                        <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Designation</th>
+                        <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Reports To</th>
+                        <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Channel Partners</th>
+                        <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
+                        <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody" class="divide-y divide-gray-200"></tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="px-4 py-2 border-t border-gray-200 flex flex-col md:flex-row items-center justify-between gap-2">
+            <div class="flex items-center gap-2 text-xs text-gray-600">
+                <span>Records per page:</span>
+                <select id="recordsPerPage" onchange="changeRecordsPerPage()" class="px-2 py-1 border border-gray-300 rounded-lg text-xs">
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
+            </div>
+            <div class="text-xs text-gray-600">
+                Showing <span class="font-medium" id="showingStart">1</span> to <span class="font-medium" id="showingEnd">10</span> of <span class="font-medium" id="totalRecords">0</span> results
+            </div>
+            <div class="flex gap-1 flex-wrap justify-center">
+                <button id="prevBtn" onclick="previousPage()" class="px-2 py-1 border border-gray-300 rounded-lg text-xs hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">Previous</button>
+                <div id="paginationNumbers" class="flex gap-1"></div>
+                <button id="nextBtn" onclick="nextPage()" class="px-2 py-1 border border-gray-300 rounded-lg text-xs hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">Next</button>
+            </div>
         </div>
     </div>
 
-    <!-- Success Notification -->
-    <div id="notification" class="notification bg-white rounded-lg shadow-lg border border-gray-200 p-4 min-w-[300px]">
-        <div class="flex items-start gap-3">
-            <div class="flex-shrink-0">
-                <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-            </div>
-            <div class="flex-1">
-                <h3 class="text-sm font-semibold text-gray-900">Success</h3>
-                <p id="notificationMessage" class="text-sm text-gray-600 mt-1"></p>
-            </div>
-            <button onclick="hideNotification()" class="flex-shrink-0 text-gray-400 hover:text-gray-600">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
+</main>
+</div>
+
+<!-- ═══════════════════════ ADD / EDIT MODAL ═══════════════════════ -->
+<div id="addModal" class="modal fixed inset-0 bg-black bg-opacity-50 z-50 items-center justify-center p-4">
+    <div class="modal-content bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+            <h2 id="modalTitle" class="text-xl font-bold text-gray-900">Add New CP Manager</h2>
+            <button onclick="closeAddModal()" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
         </div>
-    </div>
 
-    <script>
-        let tableData = [
-            { id: 'CPM002', name: 'Jane Smith', email: 'jane.smith@example.com', phone: '+91 9876543211', designation: 'Area Manager', role: 'Manager', reportsTo: 'CPM001', status: 'active', dateCreated: '2024-02-20', channelPartnersCount: 12 },
-            { id: 'CPM003', name: 'Mike Johnson', email: 'mike.j@example.com', phone: '+91 9876543212', designation: 'Team Leader', role: 'Manager', reportsTo: 'CPM001', status: 'inactive', dateCreated: '2024-03-10', channelPartnersCount: 8 },
-            { id: 'CPM005', name: 'David Brown', email: 'david.b@example.com', phone: '+91 9876543214', designation: 'Sales Supervisor', role: 'Manager', reportsTo: 'CPM004', status: 'active', dateCreated: '2024-05-12', channelPartnersCount: 15 },
-            { id: 'CPM006', name: 'Emily Davis', email: 'emily.d@example.com', phone: '+91 9876543215', designation: 'Branch Manager', role: 'Manager', reportsTo: 'CPM004', status: 'inactive', dateCreated: '2024-06-18', channelPartnersCount: 5 },
-            { id: 'CPM008', name: 'Lisa Anderson', email: 'lisa.a@example.com', phone: '+91 9876543217', designation: 'Team Coordinator', role: 'Manager', reportsTo: 'CPM007', status: 'active', dateCreated: '2024-08-30', channelPartnersCount: 20 }
-        ];
+        <form id="addForm" onsubmit="handleSubmit(event)" class="p-6">
+            <input type="hidden" id="editIndex" value="">
 
-        // CP Heads data for lookups
-        const headsData = [
-            { id: 'CPM001', name: 'John Doe', status: 'active' },
-            { id: 'CPM004', name: 'Sarah Williams', status: 'active' },
-            { id: 'CPM007', name: 'Robert Wilson', status: 'active' }
-        ];
+            <div class="grid md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Name <span class="text-red-500">*</span></label>
+                    <input type="text" id="name" name="name" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500" required>
+                </div>
 
-        // CP Managers data for lookup
-        const managersData = [
-            { id: 'CPM002', name: 'Jane Smith', reportsTo: 'CPM001', status: 'active' },
-            { id: 'CPM003', name: 'Mike Johnson', reportsTo: 'CPM001', status: 'inactive' },
-            { id: 'CPM005', name: 'David Brown', reportsTo: 'CPM004', status: 'active' },
-            { id: 'CPM006', name: 'Emily Davis', reportsTo: 'CPM004', status: 'inactive' },
-            { id: 'CPM008', name: 'Lisa Anderson', reportsTo: 'CPM007', status: 'active' }
-        ];
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Email <span class="text-red-500">*</span></label>
+                    <input type="email" id="email" name="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500" required>
+                </div>
 
-        function getManagersForHead(headId) {
-            return managersData.filter(m => m.reportsTo === headId);
-        }
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Phone <span class="text-red-500">*</span></label>
+                    <input type="tel" id="phone" name="phone" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500" required>
+                </div>
 
-        function getManagersTooltip(headId) {
-            const managers = getManagersForHead(headId);
-            if (managers.length === 0) return 'No managers assigned';
-            return managers.map(m => m.name).join(', ');
-        }
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Designation <span class="text-red-500">*</span></label>
+                    <input type="text" id="designation" name="designation" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500" required>
+                </div>
 
-        let filteredData = [...tableData];
-        let currentPage = 1;
-        let recordsPerPage = 10;
-        
-        let selectedStatuses = [];
-        let dateRange = { from: '', to: '' };
+                <!-- Reports To — dropdown of CP Heads -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Reports To (CP Head) <span class="text-red-500">*</span></label>
+                    <select id="reportsTo" name="reportsTo" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500" required>
+                        <option value="">Select CP Head</option>
+                    </select>
+                </div>
 
-        function renderTable() {
-            const tbody = document.getElementById('tableBody');
-            tbody.innerHTML = '';
-            
-            if (filteredData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="9" class="px-3 py-8 text-center text-gray-500 text-sm">No records found</td></tr>';
-                updatePagination();
-                updateStats();
-                return;
-            }
-            
-            const start = (currentPage - 1) * recordsPerPage;
-            const end = start + recordsPerPage;
-            const pageData = filteredData.slice(start, end);
-            
-            pageData.forEach((row, index) => {
-                const managerCount = getManagersForHead(row.id).length;
-                const managerTooltip = getManagersTooltip(row.id);
-                const tr = document.createElement('tr');
-                tr.className = 'hover:bg-gray-50';
-                tr.innerHTML = `
-                    <td class="px-3 py-4 text-sm font-medium text-gray-900">${row.id}</td>
-                    <td class="px-3 py-4 text-sm text-gray-900">${row.name}</td>
-                    <td class="px-3 py-4 text-sm text-gray-600">${row.email}</td>
-                    <td class="px-3 py-4 text-sm text-gray-600">${row.phone}</td>
-                    <td class="px-3 py-4 text-sm text-gray-600">${row.designation}</td>
-                    <td class="px-3 py-4 text-sm text-center">
-                        <span class="inline-flex items-center justify-center px-3 py-1 bg-blue-100 text-blue-800 font-semibold rounded-full cursor-pointer" title="${managerTooltip}">
-                            ${managerCount}
-                        </span>
-                    </td>
-                    <td class="px-3 py-4 text-sm text-center">
-                        <span class="inline-flex items-center justify-center text-blue-700 font-semibold">${row.channelPartnersCount}</span>
-                    </td>
-                    <td class="px-3 py-4">
-                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ${row.status === 'active' ? 'badge-active' : 'badge-inactive'}">
-                            ${row.status.charAt(0).toUpperCase() + row.status.slice(1)}
-                        </span>
-                    </td>
-                    <td class="px-3 py-4 text-sm">
-                        <div class="action-icons">
-                            <button onclick="viewRecord(${tableData.indexOf(row)})" title="View" class="text-gray-600 hover:text-gray-800">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                </svg>
-                            </button>
-                            <button onclick="editRecord(${tableData.indexOf(row)})" title="Edit" class="text-blue-600 hover:text-blue-800">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                                </svg>
-                            </button>
-                            <button onclick="openResetPasswordModal(${tableData.indexOf(row)})" title="Reset Password" class="text-purple-600 hover:text-purple-800">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
-                                </svg>
-                            </button>
-                            ${row.status === 'active' ? 
-                                `<button onclick="handleAction('deactivate', ${tableData.indexOf(row)})" title="Deactivate" class="text-orange-500 hover:text-orange-700">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                    </svg>
-                                </button>` : 
-                                `<button onclick="handleAction('activate', ${tableData.indexOf(row)})" title="Activate" class="text-green-600 hover:text-green-800">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                    </svg>
-                                </button>`
-                            }
-                        </div>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-            
-            updatePagination();
-            updateStats();
-        }
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Status <span class="text-red-500">*</span></label>
+                    <select id="status" name="status" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500" required>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </div>
+            </div>
 
-        function updatePagination() {
-            const totalPages = Math.ceil(filteredData.length / recordsPerPage);
-            const start = filteredData.length > 0 ? (currentPage - 1) * recordsPerPage + 1 : 0;
-            const end = Math.min(currentPage * recordsPerPage, filteredData.length);
-            
-            document.getElementById('totalRecords').textContent = filteredData.length;
-            document.getElementById('showingStart').textContent = start;
-            document.getElementById('showingEnd').textContent = end;
-            
-            document.getElementById('prevBtn').disabled = currentPage === 1;
-            document.getElementById('nextBtn').disabled = currentPage >= totalPages || totalPages === 0;
-            
-            const paginationNumbers = document.getElementById('paginationNumbers');
-            paginationNumbers.innerHTML = '';
-            
-            for (let i = 1; i <= totalPages; i++) {
-                const btn = document.createElement('button');
-                btn.textContent = i;
-                btn.className = i === currentPage 
-                    ? 'px-2 py-1 text-white rounded-lg text-xs'
-                    : 'px-2 py-1 border border-gray-300 rounded-lg text-xs hover:bg-gray-50';
-                if (i === currentPage) {
-                    btn.style.background = 'linear-gradient(135deg, #95c13d 0%, #7ba82d 100%)';
-                }
-                btn.onclick = () => goToPage(i);
-                paginationNumbers.appendChild(btn);
-            }
-        }
-
-        function updateStats() {
-            const total = filteredData.length;
-            const active = filteredData.filter(r => r.status === 'active').length;
-            const inactive = filteredData.filter(r => r.status === 'inactive').length;
-            
-            document.getElementById('stat-total').textContent = total;
-            document.getElementById('stat-active').textContent = active;
-            document.getElementById('stat-inactive').textContent = inactive;
-        }
-
-        function previousPage() {
-            if (currentPage > 1) {
-                currentPage--;
-                renderTable();
-            }
-        }
-
-        function nextPage() {
-            const totalPages = Math.ceil(filteredData.length / recordsPerPage);
-            if (currentPage < totalPages) {
-                currentPage++;
-                renderTable();
-            }
-        }
-
-        function goToPage(page) {
-            currentPage = page;
-            renderTable();
-        }
-
-        function changeRecordsPerPage() {
-            recordsPerPage = parseInt(document.getElementById('recordsPerPage').value);
-            currentPage = 1;
-            renderTable();
-        }
-
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-            return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-        }
-
-        function formatDateShort(dateString) {
-            const date = new Date(dateString);
-            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-        }
-
-        function filterTable() {
-            const searchInput = document.getElementById('searchInput').value.toLowerCase();
-            
-            filteredData = tableData.filter(row => {
-                // Search filter
-                const matchesSearch = !searchInput || 
-                    row.name.toLowerCase().includes(searchInput) ||
-                    row.email.toLowerCase().includes(searchInput) ||
-                    row.phone.toLowerCase().includes(searchInput);
-                
-                // Status filter
-                const matchesStatus = selectedStatuses.length === 0 || selectedStatuses.includes(row.status);
-                
-                // Date range filter
-                let matchesDate = true;
-                if (dateRange.from || dateRange.to) {
-                    const rowDate = new Date(row.dateCreated);
-                    if (dateRange.from && dateRange.to) {
-                        const fromDate = new Date(dateRange.from);
-                        const toDate = new Date(dateRange.to);
-                        matchesDate = rowDate >= fromDate && rowDate <= toDate;
-                    } else if (dateRange.from) {
-                        const fromDate = new Date(dateRange.from);
-                        matchesDate = rowDate >= fromDate;
-                    } else if (dateRange.to) {
-                        const toDate = new Date(dateRange.to);
-                        matchesDate = rowDate <= toDate;
-                    }
-                }
-                
-                return matchesSearch && matchesStatus && matchesDate;
-            });
-            
-            currentPage = 1;
-            renderTable();
-        }
-
-        function toggleDropdown(dropdownId) {
-            const dropdown = document.getElementById(dropdownId);
-            const allDropdowns = document.querySelectorAll('.dropdown-menu');
-            
-            allDropdowns.forEach(dd => {
-                if (dd.id !== dropdownId) {
-                    dd.classList.remove('active');
-                }
-            });
-            
-            dropdown.classList.toggle('active');
-        }
-
-        function updateStatusFilter() {
-            const checkboxes = document.querySelectorAll('.status-checkbox');
-            selectedStatuses = Array.from(checkboxes)
-                .filter(cb => cb.checked)
-                .map(cb => cb.value);
-            
-            const label = document.getElementById('statusFilterLabel');
-            if (selectedStatuses.length === 0) {
-                label.textContent = 'All Status';
-            } else if (selectedStatuses.length === 1) {
-                label.textContent = selectedStatuses[0].charAt(0).toUpperCase() + selectedStatuses[0].slice(1);
-            } else {
-                label.textContent = `${selectedStatuses.length} Selected`;
-            }
-            
-            filterTable();
-        }
-
-        function updateDateFilter() {
-            dateRange.from = document.getElementById('fromDate').value;
-            dateRange.to = document.getElementById('toDate').value;
-            
-            const label = document.getElementById('dateFilterLabel');
-            if (dateRange.from && dateRange.to) {
-                label.textContent = `${formatDateShort(dateRange.from)} - ${formatDateShort(dateRange.to)}`;
-            } else if (dateRange.from) {
-                label.textContent = `From ${formatDateShort(dateRange.from)}`;
-            } else if (dateRange.to) {
-                label.textContent = `To ${formatDateShort(dateRange.to)}`;
-            } else {
-                label.textContent = 'Date Range';
-            }
-            
-            filterTable();
-        }
-
-        function clearDateFilter() {
-            document.getElementById('fromDate').value = '';
-            document.getElementById('toDate').value = '';
-            dateRange = { from: '', to: '' };
-            document.getElementById('dateFilterLabel').textContent = 'Date Range';
-            filterTable();
-        }
-
-        function resetAllFilters() {
-            // Clear search input
-            document.getElementById('searchInput').value = '';
-            
-            // Clear status checkboxes
-            document.querySelectorAll('.status-checkbox').forEach(cb => cb.checked = false);
-            selectedStatuses = [];
-            document.getElementById('statusFilterLabel').textContent = 'All Status';
-            
-            // Clear date range
-            document.getElementById('fromDate').value = '';
-            document.getElementById('toDate').value = '';
-            dateRange = { from: '', to: '' };
-            document.getElementById('dateFilterLabel').textContent = 'Date Range';
-            
-            // Re-filter table
-            filterTable();
-        }
-
-        function toggleUserMenu() {
-            document.getElementById('userMenu').classList.toggle('active');
-        }
-
-        function toggleMobileMenu() {
-            document.getElementById('mobileMenu').classList.toggle('hidden');
-        }
-
-        function setActiveNav(element) {
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            element.classList.add('active');
-        }
-
-        function handleAction(action, index) {
-            const item = tableData[index];
-            
-            if (action === 'activate') {
-                tableData[index].status = 'active';
-                showNotification(`${item.name} has been activated`);
-            } else if (action === 'deactivate') {
-                tableData[index].status = 'inactive';
-                showNotification(`${item.name} has been deactivated`);
-            }
-            
-            filterTable();
-        }
-
-        function viewRecord(index) {
-            const record = tableData[index];
-            
-            document.getElementById('editIndex').value = index;
-            document.getElementById('viewMode').value = 'true';
-            
-            // Disable all form fields first
-            document.querySelectorAll('#addForm input, #addForm select, #addForm textarea').forEach(field => {
-                field.disabled = true;
-            });
-            
-            // Hide submit button, show only close button
-            document.getElementById('modalButtons').innerHTML = `
-                <button type="button" onclick="closeAddModal()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors">
-                    Close
-                </button>
-            `;
-            
-            // Now set the modal title
-            document.getElementById('modalTitle').textContent = 'View CP Manager';
-            
-            // Populate form fields
-            document.getElementById('name').value = record.name;
-            document.getElementById('email').value = record.email;
-            document.getElementById('phone').value = record.phone;
-            document.getElementById('designation').value = record.designation;
-            document.getElementById('role').value = record.role;
-            document.getElementById('status').value = record.status;
-            
-            openAddModal();
-        }
-
-        function editRecord(index) {
-            const record = tableData[index];
-            
-            document.getElementById('editIndex').value = index;
-            document.getElementById('viewMode').value = 'false';
-            
-            // Enable all form fields first
-            document.querySelectorAll('#addForm input, #addForm select, #addForm textarea').forEach(field => {
-                field.disabled = false;
-            });
-            
-            // Restore buttons first
-            document.getElementById('modalButtons').innerHTML = `
-                <button type="submit" id="submitBtn" class="flex-1 text-white px-4 py-2 rounded-lg font-medium transition-colors" style="background: linear-gradient(135deg, #95c13d 0%, #7ba82d 100%);">
-                    <span id="submitBtnText">Update</span>
-                </button>
-                <button type="button" onclick="closeAddModal()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors">
-                    Cancel
-                </button>
-            `;
-            
-            // Now set the modal title and button text
-            document.getElementById('modalTitle').textContent = 'Edit CP Manager';
-            document.getElementById('submitBtnText').textContent = 'Update';
-            
-            // Populate form fields
-            document.getElementById('name').value = record.name;
-            document.getElementById('email').value = record.email;
-            document.getElementById('phone').value = record.phone;
-            document.getElementById('designation').value = record.designation;
-            document.getElementById('role').value = record.role;
-            document.getElementById('status').value = record.status;
-            
-            openAddModal();
-        }
-
-        function openAddModal() {
-            document.getElementById('addModal').classList.add('active');
-        }
-
-        function closeAddModal() {
-            document.getElementById('addModal').classList.remove('active');
-            document.getElementById('addForm').reset();
-            document.getElementById('modalTitle').textContent = 'Add New CP Manager';
-            document.getElementById('submitBtnText').textContent = 'Save';
-            document.getElementById('editIndex').value = '';
-            document.getElementById('viewMode').value = 'false';
-            
-            // Enable all form fields
-            document.querySelectorAll('#addForm input, #addForm select, #addForm textarea').forEach(field => {
-                field.disabled = false;
-            });
-            
-            // Restore buttons
-            document.getElementById('modalButtons').innerHTML = `
-                <button type="submit" id="submitBtn" class="flex-1 text-white px-4 py-2 rounded-lg font-medium transition-colors" style="background: linear-gradient(135deg, #95c13d 0%, #7ba82d 100%);">
+            <div id="modalButtons" class="flex gap-3 mt-6">
+                <button type="submit" class="flex-1 text-white px-4 py-2 rounded-lg font-medium" style="background:linear-gradient(135deg,#95c13d 0%,#7ba82d 100%);">
                     <span id="submitBtnText">Save</span>
                 </button>
-                <button type="button" onclick="closeAddModal()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors">
-                    Cancel
-                </button>
-            `;
+                <button type="button" onclick="closeAddModal()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ═══════════════════════ RESET PASSWORD MODAL ═══════════════════════ -->
+<div id="resetPasswordModal" class="modal fixed inset-0 bg-black bg-opacity-50 z-50 items-center justify-center p-4">
+    <div class="modal-content bg-white rounded-xl shadow-2xl max-w-md w-full">
+        <div class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+            <h2 class="text-xl font-bold text-gray-900">Reset Password</h2>
+            <button onclick="closeResetPasswordModal()" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <form id="resetPasswordForm" onsubmit="handleResetPassword(event)" class="p-6">
+            <input type="hidden" id="resetUserIndex" value="">
+            <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <p class="text-sm text-blue-800"><span class="font-semibold">User:</span> <span id="resetUserName"></span></p>
+                <p class="text-sm text-blue-800 mt-1"><span class="font-semibold">Email:</span> <span id="resetUserEmail"></span></p>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">New Password <span class="text-red-500">*</span></label>
+                    <div class="relative">
+                        <input type="password" id="newPassword" name="newPassword" required minlength="8" oninput="checkPasswordStrength()"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500">
+                        <button type="button" onclick="togglePasswordVisibility('newPassword','toggleNewPassword')" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                            <svg id="toggleNewPassword" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="password-strength"><div id="passwordStrengthBar" class="password-strength-bar" style="width:0%;background-color:#e5e7eb;"></div></div>
+                    <p id="passwordStrengthText" class="text-xs text-gray-500 mt-1">Password strength: None</p>
+                    <p class="text-xs text-gray-500 mt-1">Minimum 8 characters</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Confirm Password <span class="text-red-500">*</span></label>
+                    <div class="relative">
+                        <input type="password" id="confirmPassword" name="confirmPassword" required minlength="8" oninput="checkPasswordMatch()"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500">
+                        <button type="button" onclick="togglePasswordVisibility('confirmPassword','toggleConfirmPassword')" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                            <svg id="toggleConfirmPassword" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <p id="passwordMatchText" class="text-xs text-gray-500 mt-1"></p>
+                </div>
+            </div>
+            <div class="flex gap-3 mt-6">
+                <button type="submit" class="flex-1 text-white px-4 py-2 rounded-lg font-medium" style="background:linear-gradient(135deg,#95c13d 0%,#7ba82d 100%);">Reset Password</button>
+                <button type="button" onclick="closeResetPasswordModal()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Notification -->
+<div id="notification" class="notification bg-white rounded-lg shadow-lg border border-gray-200 p-4 min-w-[300px]">
+    <div class="flex items-start gap-3">
+        <svg class="w-6 h-6 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <div class="flex-1">
+            <h3 class="text-sm font-semibold text-gray-900">Success</h3>
+            <p id="notificationMessage" class="text-sm text-gray-600 mt-1"></p>
+        </div>
+        <button onclick="hideNotification()" class="flex-shrink-0 text-gray-400 hover:text-gray-600">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+    </div>
+</div>
+
+<script>
+// ─── Data ────────────────────────────────────────────────────────────────────
+// CP Heads — used in "Reports To" dropdown
+const headsData = [
+    { id: 'CPH001', name: 'John Doe',      status: 'active' },
+    { id: 'CPH004', name: 'Sarah Williams',status: 'active' },
+    { id: 'CPH007', name: 'Robert Wilson', status: 'active' }
+];
+
+// CP Managers table data — reportsTo stores the head ID
+let tableData = [
+    { id: 'CPM002', name: 'Jane Smith',    email: 'jane.smith@example.com', phone: '+91 9876543211', designation: 'Area Manager',     reportsTo: 'CPH001', status: 'active',   dateCreated: '2024-02-20', channelPartnersCount: 12 },
+    { id: 'CPM003', name: 'Mike Johnson',  email: 'mike.j@example.com',     phone: '+91 9876543212', designation: 'Team Leader',       reportsTo: 'CPH001', status: 'inactive', dateCreated: '2024-03-10', channelPartnersCount: 8  },
+    { id: 'CPM005', name: 'David Brown',   email: 'david.b@example.com',    phone: '+91 9876543214', designation: 'Sales Supervisor',  reportsTo: 'CPH004', status: 'active',   dateCreated: '2024-05-12', channelPartnersCount: 15 },
+    { id: 'CPM006', name: 'Emily Davis',   email: 'emily.d@example.com',    phone: '+91 9876543215', designation: 'Branch Manager',    reportsTo: 'CPH004', status: 'inactive', dateCreated: '2024-06-18', channelPartnersCount: 5  },
+    { id: 'CPM008', name: 'Lisa Anderson', email: 'lisa.a@example.com',     phone: '+91 9876543217', designation: 'Team Coordinator', reportsTo: 'CPH007', status: 'active',   dateCreated: '2024-08-30', channelPartnersCount: 20 }
+];
+
+// Helper: get head name from id
+function getHeadName(headId) {
+    const h = headsData.find(function(h){ return h.id === headId; });
+    return h ? h.name : '—';
+}
+
+// ─── Filter state ─────────────────────────────────────────────────────────────
+let filteredData       = [...tableData];
+let currentPage        = 1;
+let recordsPerPage     = 10;
+let selectedStatuses   = [];
+let selectedReporting  = [];   // head IDs
+let dateRange          = { from: '', to: '' };
+
+// ─── Populate filter lists ────────────────────────────────────────────────────
+function populateFilterLists() {
+    const container = document.getElementById('reportingCheckboxList');
+    container.innerHTML = '';
+    headsData.forEach(function(h) {
+        var lbl = document.createElement('label');
+        lbl.className = 'flex items-center px-2 py-1.5 hover:bg-gray-50 rounded cursor-pointer';
+        lbl.innerHTML = '<input type="checkbox" value="' + h.id + '" onchange="updateMultiFilter(\'reporting\')" class="reporting-checkbox w-4 h-4 rounded accent-green-600"><span class="ml-2 text-sm text-gray-700">' + h.name + '</span>';
+        container.appendChild(lbl);
+    });
+}
+
+// Populate modal Reports To dropdown
+function populateReportsToDropdown(selectedId) {
+    var sel = document.getElementById('reportsTo');
+    sel.innerHTML = '<option value="">Select CP Head</option>';
+    headsData.forEach(function(h) {
+        var opt = document.createElement('option');
+        opt.value = h.id;
+        opt.textContent = h.name + ' (' + h.id + ')';
+        if (h.id === selectedId) opt.selected = true;
+        sel.appendChild(opt);
+    });
+}
+
+// ─── Render table ─────────────────────────────────────────────────────────────
+function renderTable() {
+    var tbody = document.getElementById('tableBody');
+    tbody.innerHTML = '';
+
+    if (filteredData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="9" class="px-3 py-8 text-center text-gray-500 text-sm">No records found</td></tr>';
+        updatePagination();
+        updateStats();
+        return;
+    }
+
+    var start    = (currentPage - 1) * recordsPerPage;
+    var pageData = filteredData.slice(start, start + recordsPerPage);
+
+    pageData.forEach(function(row) {
+        var realIndex  = tableData.indexOf(row);
+        var headName   = getHeadName(row.reportsTo);
+        var tr = document.createElement('tr');
+        tr.className = 'hover:bg-gray-50';
+        tr.innerHTML =
+            '<td class="px-3 py-4 text-sm font-medium text-gray-900">' + row.id + '</td>' +
+            '<td class="px-3 py-4 text-sm text-gray-900 whitespace-nowrap">' + row.name + '</td>' +
+            '<td class="px-3 py-4 text-sm text-gray-600">' + row.email + '</td>' +
+            '<td class="px-3 py-4 text-sm text-gray-600 whitespace-nowrap">' + row.phone + '</td>' +
+            '<td class="px-3 py-4 text-sm text-gray-600">' + row.designation + '</td>' +
+            '<td class="px-3 py-4 text-sm text-gray-700 font-medium whitespace-nowrap">' + headName + '</td>' +
+            '<td class="px-3 py-4 text-sm text-center font-semibold text-blue-700">' + row.channelPartnersCount + '</td>' +
+            '<td class="px-3 py-4">' +
+                '<span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ' + (row.status === 'active' ? 'badge-active' : 'badge-inactive') + '">' +
+                    row.status.charAt(0).toUpperCase() + row.status.slice(1) +
+                '</span>' +
+            '</td>' +
+            '<td class="px-3 py-4 text-sm">' +
+                '<div class="action-icons">' +
+                    // Edit
+                    '<button onclick="editRecord(' + realIndex + ')" title="Edit" class="text-blue-600 hover:text-blue-800">' +
+                        '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>' +
+                    '</button>' +
+                    // Reset Password
+                    '<button onclick="openResetPasswordModal(' + realIndex + ')" title="Reset Password" class="text-purple-600 hover:text-purple-800">' +
+                        '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>' +
+                    '</button>' +
+                    // Activate / Deactivate
+                    (row.status === 'active'
+                        ? '<button onclick="handleAction(\'deactivate\',' + realIndex + ')" title="Deactivate" class="text-orange-500 hover:text-orange-700"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></button>'
+                        : '<button onclick="handleAction(\'activate\',' + realIndex + ')" title="Activate" class="text-green-600 hover:text-green-800"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></button>') +
+                '</div>' +
+            '</td>';
+        tbody.appendChild(tr);
+    });
+
+    updatePagination();
+    updateStats();
+}
+
+// ─── Pagination ───────────────────────────────────────────────────────────────
+function updatePagination() {
+    var totalPages = Math.ceil(filteredData.length / recordsPerPage);
+    var start = filteredData.length > 0 ? (currentPage - 1) * recordsPerPage + 1 : 0;
+    var end   = Math.min(currentPage * recordsPerPage, filteredData.length);
+
+    document.getElementById('totalRecords').textContent = filteredData.length;
+    document.getElementById('showingStart').textContent = start;
+    document.getElementById('showingEnd').textContent   = end;
+    document.getElementById('prevBtn').disabled = currentPage === 1;
+    document.getElementById('nextBtn').disabled = currentPage >= totalPages || totalPages === 0;
+
+    var container = document.getElementById('paginationNumbers');
+    container.innerHTML = '';
+    for (var i = 1; i <= totalPages; i++) {
+        var btn = document.createElement('button');
+        btn.textContent = i;
+        btn.className = i === currentPage ? 'px-2 py-1 text-white rounded-lg text-xs' : 'px-2 py-1 border border-gray-300 rounded-lg text-xs hover:bg-gray-50';
+        if (i === currentPage) btn.style.background = 'linear-gradient(135deg,#95c13d 0%,#7ba82d 100%)';
+        btn.onclick = (function(p){ return function(){ goToPage(p); }; })(i);
+        container.appendChild(btn);
+    }
+}
+
+function updateStats() {
+    document.getElementById('stat-total').textContent    = filteredData.length;
+    document.getElementById('stat-active').textContent   = filteredData.filter(function(r){ return r.status === 'active'; }).length;
+    document.getElementById('stat-inactive').textContent = filteredData.filter(function(r){ return r.status === 'inactive'; }).length;
+}
+
+function previousPage()         { if (currentPage > 1) { currentPage--; renderTable(); } }
+function nextPage()             { var tp = Math.ceil(filteredData.length / recordsPerPage); if (currentPage < tp) { currentPage++; renderTable(); } }
+function goToPage(p)            { currentPage = p; renderTable(); }
+function changeRecordsPerPage() { recordsPerPage = parseInt(document.getElementById('recordsPerPage').value); currentPage = 1; renderTable(); }
+
+// ─── Filtering ────────────────────────────────────────────────────────────────
+function filterTable() {
+    var q = document.getElementById('searchInput').value.toLowerCase();
+
+    filteredData = tableData.filter(function(row) {
+        var matchSearch = !q ||
+            row.name.toLowerCase().includes(q) ||
+            row.email.toLowerCase().includes(q) ||
+            row.phone.toLowerCase().includes(q);
+
+        var matchStatus    = selectedStatuses.length  === 0 || selectedStatuses.includes(row.status);
+        var matchReporting = selectedReporting.length === 0 || selectedReporting.includes(row.reportsTo);
+
+        var matchDate = true;
+        if (dateRange.from || dateRange.to) {
+            var rd = new Date(row.dateCreated);
+            if (dateRange.from && dateRange.to) matchDate = rd >= new Date(dateRange.from) && rd <= new Date(dateRange.to);
+            else if (dateRange.from)            matchDate = rd >= new Date(dateRange.from);
+            else if (dateRange.to)              matchDate = rd <= new Date(dateRange.to);
         }
 
-        function handleSubmit(event) {
-            event.preventDefault();
-            
-            const formData = new FormData(event.target);
-            const editIndex = document.getElementById('editIndex').value;
-            
-            const entry = {
-                name: formData.get('name'),
-                email: formData.get('email'),
-                phone: formData.get('phone'),
-                designation: formData.get('designation'),
-                role: 'Head',
-                reportsTo: null,
-                status: formData.get('status')
-            };
-            
-            if (editIndex !== '') {
-                const index = parseInt(editIndex);
-                tableData[index] = {
-                    ...tableData[index],
-                    ...entry
-                };
-                showNotification('CP Head updated successfully!');
-            } else {
-                const newEntry = {
-                    id: 'CPM' + String(tableData.length + 1).padStart(3, '0'),
-                    ...entry,
-                    dateCreated: new Date().toISOString().split('T')[0],
-                    channelPartnersCount: 0
-                };
-                tableData.unshift(newEntry);
-                showNotification('CP Head added successfully!');
-            }
-            
-            filterTable();
-            closeAddModal();
+        return matchSearch && matchStatus && matchReporting && matchDate;
+    });
+
+    currentPage = 1;
+    renderTable();
+    renderActiveFilterTags();
+}
+
+// ─── Dropdown toggle ──────────────────────────────────────────────────────────
+function toggleDropdown(id, event) {
+    event.stopPropagation();
+    var target = document.getElementById(id);
+    var isOpen = target.classList.contains('active');
+    document.querySelectorAll('.dropdown-menu').forEach(function(dd){ dd.classList.remove('active'); });
+    if (!isOpen) target.classList.add('active');
+}
+
+// ─── Multi-select filter updater ──────────────────────────────────────────────
+var filterConfig = {
+    status:    { cls: '.status-checkbox',    labelId: 'statusFilterLabel',    empty: 'All Status',         set: function(v){ selectedStatuses  = v; } },
+    reporting: { cls: '.reporting-checkbox', labelId: 'reportingFilterLabel', empty: 'Reporting Manager',  set: function(v){ selectedReporting = v; } }
+};
+
+function updateMultiFilter(key) {
+    var cfg  = filterConfig[key];
+    var vals = Array.from(document.querySelectorAll(cfg.cls))
+                   .filter(function(cb){ return cb.checked; })
+                   .map(function(cb){ return cb.value; });
+    cfg.set(vals);
+
+    var lbl = document.getElementById(cfg.labelId);
+    if (vals.length === 0) {
+        lbl.textContent = cfg.empty;
+    } else if (vals.length === 1) {
+        // For reporting, show head name; for status show the value
+        if (key === 'reporting') {
+            lbl.textContent = getHeadName(vals[0]);
+        } else {
+            lbl.textContent = vals[0].charAt(0).toUpperCase() + vals[0].slice(1);
         }
+    } else {
+        lbl.textContent = vals.length + ' Selected';
+    }
+    filterTable();
+}
 
-        // Password Reset Functions
-        function openResetPasswordModal(index) {
-            const record = tableData[index];
-            document.getElementById('resetUserIndex').value = index;
-            document.getElementById('resetUserName').textContent = record.name;
-            document.getElementById('resetUserEmail').textContent = record.email;
-            document.getElementById('resetPasswordModal').classList.add('active');
-            document.getElementById('resetPasswordForm').reset();
-            document.getElementById('passwordStrengthBar').style.width = '0%';
-            document.getElementById('passwordStrengthBar').style.backgroundColor = '#e5e7eb';
-            document.getElementById('passwordStrengthText').textContent = 'Password strength: None';
-            document.getElementById('passwordMatchText').textContent = '';
-        }
+function updateDateFilter() {
+    dateRange.from = document.getElementById('fromDate').value;
+    dateRange.to   = document.getElementById('toDate').value;
+    var lbl = document.getElementById('dateFilterLabel');
+    if (dateRange.from && dateRange.to)   lbl.textContent = fmtShort(dateRange.from) + ' – ' + fmtShort(dateRange.to);
+    else if (dateRange.from)               lbl.textContent = 'From ' + fmtShort(dateRange.from);
+    else if (dateRange.to)                 lbl.textContent = 'To '   + fmtShort(dateRange.to);
+    else                                   lbl.textContent = 'Date Range';
+    filterTable();
+}
 
-        function closeResetPasswordModal() {
-            document.getElementById('resetPasswordModal').classList.remove('active');
-            document.getElementById('resetPasswordForm').reset();
-        }
+function clearDateFilter() {
+    document.getElementById('fromDate').value = '';
+    document.getElementById('toDate').value   = '';
+    dateRange = { from: '', to: '' };
+    document.getElementById('dateFilterLabel').textContent = 'Date Range';
+    filterTable();
+}
 
-        function togglePasswordVisibility(inputId, iconId) {
-            const input = document.getElementById(inputId);
-            const icon = document.getElementById(iconId);
-            
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>';
-            } else {
-                input.type = 'password';
-                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>';
-            }
-        }
+function resetAllFilters() {
+    document.getElementById('searchInput').value = '';
+    document.querySelectorAll('.status-checkbox, .reporting-checkbox').forEach(function(cb){ cb.checked = false; });
+    selectedStatuses = []; selectedReporting = [];
+    document.getElementById('statusFilterLabel').textContent    = 'All Status';
+    document.getElementById('reportingFilterLabel').textContent = 'Reporting Manager';
+    clearDateFilter();
+}
 
-        function checkPasswordStrength() {
-            const password = document.getElementById('newPassword').value;
-            const strengthBar = document.getElementById('passwordStrengthBar');
-            const strengthText = document.getElementById('passwordStrengthText');
-            
-            let strength = 0;
-            let strengthLabel = 'None';
-            let color = '#e5e7eb';
-            
-            if (password.length >= 8) strength += 25;
-            if (password.length >= 12) strength += 25;
-            if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength += 20;
-            if (/[0-9]/.test(password)) strength += 15;
-            if (/[^a-zA-Z0-9]/.test(password)) strength += 15;
-            
-            if (strength <= 25) {
-                strengthLabel = 'Weak';
-                color = '#ef4444';
-            } else if (strength <= 50) {
-                strengthLabel = 'Fair';
-                color = '#f59e0b';
-            } else if (strength <= 75) {
-                strengthLabel = 'Good';
-                color = '#3b82f6';
-            } else {
-                strengthLabel = 'Strong';
-                color = '#10b981';
-            }
-            
-            strengthBar.style.width = strength + '%';
-            strengthBar.style.backgroundColor = color;
-            strengthText.textContent = `Password strength: ${strengthLabel}`;
-            strengthText.style.color = color;
-            
-            checkPasswordMatch();
-        }
+// ─── Active filter tags ───────────────────────────────────────────────────────
+function renderActiveFilterTags() {
+    var container = document.getElementById('activeFilterTags');
+    container.innerHTML = '';
+    var tags = [];
 
-        function checkPasswordMatch() {
-            const newPassword = document.getElementById('newPassword').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-            const matchText = document.getElementById('passwordMatchText');
-            
-            if (confirmPassword.length === 0) {
-                matchText.textContent = '';
-                return;
-            }
-            
-            if (newPassword === confirmPassword) {
-                matchText.textContent = '✓ Passwords match';
-                matchText.style.color = '#10b981';
-            } else {
-                matchText.textContent = '✗ Passwords do not match';
-                matchText.style.color = '#ef4444';
-            }
-        }
+    selectedStatuses.forEach(function(v) {
+        tags.push({ label: 'Status: ' + cap(v), clear: function(){ uncheckOne('.status-checkbox', v); updateMultiFilter('status'); } });
+    });
+    selectedReporting.forEach(function(v) {
+        var name = getHeadName(v);
+        tags.push({ label: 'Reports To: ' + name, clear: function(){ uncheckOne('.reporting-checkbox', v); updateMultiFilter('reporting'); } });
+    });
+    if (dateRange.from || dateRange.to) {
+        var dl = dateRange.from && dateRange.to ? fmtShort(dateRange.from) + '–' + fmtShort(dateRange.to) :
+                 dateRange.from ? 'From ' + fmtShort(dateRange.from) : 'To ' + fmtShort(dateRange.to);
+        tags.push({ label: 'Date: ' + dl, clear: clearDateFilter });
+    }
 
-        function handleResetPassword(event) {
-            event.preventDefault();
-            
-            const newPassword = document.getElementById('newPassword').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-            const userIndex = parseInt(document.getElementById('resetUserIndex').value);
-            
-            if (newPassword !== confirmPassword) {
-                alert('Passwords do not match!');
-                return;
-            }
-            
-            if (newPassword.length < 8) {
-                alert('Password must be at least 8 characters long!');
-                return;
-            }
-            
-            const user = tableData[userIndex];
-            
-            // In a real application, this would make an API call to reset the password
-            // For this demo, we'll just show a success message
-            showNotification(`Password reset successfully for ${user.name}. A confirmation email has been sent to ${user.email}.`);
-            
-            closeResetPasswordModal();
-        }
+    tags.forEach(function(t) {
+        var span = document.createElement('span');
+        span.className = 'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800';
+        span.textContent = t.label + ' ';
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.innerHTML = '<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>';
+        btn.className = 'ml-0.5 hover:text-green-600';
+        btn.addEventListener('click', t.clear);
+        span.appendChild(btn);
+        container.appendChild(span);
+    });
+}
 
-        function showNotification(message) {
-            const notification = document.getElementById('notification');
-            const messageEl = document.getElementById('notificationMessage');
-            messageEl.textContent = message;
-            notification.classList.add('show');
-            
-            setTimeout(() => {
-                hideNotification();
-            }, 5000);
-        }
+function cap(s)                    { return s.charAt(0).toUpperCase() + s.slice(1); }
+function uncheckOne(sel, val)      { document.querySelectorAll(sel).forEach(function(cb){ if (cb.value === val) cb.checked = false; }); }
+function fmtShort(d)               { return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); }
 
-        function hideNotification() {
-            document.getElementById('notification').classList.remove('show');
-        }
+// ─── Actions ─────────────────────────────────────────────────────────────────
+function handleAction(action, index) {
+    if (action === 'activate')   { tableData[index].status = 'active';   showNotification(tableData[index].name + ' has been activated.'); }
+    if (action === 'deactivate') { tableData[index].status = 'inactive'; showNotification(tableData[index].name + ' has been deactivated.'); }
+    filterTable();
+}
 
-        function handleLogout() {
-            if (confirm('Are you sure you want to logout?')) {
-                window.location.href = '../auth/login-org.html';
-            }
-        }
+// ─── Add / Edit Modal ─────────────────────────────────────────────────────────
+function openAddModal() {
+    populateReportsToDropdown('');
+    document.getElementById('addModal').classList.add('active');
+}
 
-        document.addEventListener('click', function(event) {
-            if (!event.target.closest('.relative') && !event.target.closest('button')) {
-                document.querySelectorAll('.dropdown-menu').forEach(menu => {
-                    menu.classList.remove('active');
-                });
-            }
-        });
+function closeAddModal() {
+    document.getElementById('addModal').classList.remove('active');
+    document.getElementById('addForm').reset();
+    document.getElementById('editIndex').value = '';
+    document.getElementById('modalTitle').textContent = 'Add New CP Manager';
+    document.getElementById('submitBtnText').textContent = 'Save';
+    document.getElementById('modalButtons').innerHTML =
+        '<button type="submit" class="flex-1 text-white px-4 py-2 rounded-lg font-medium" style="background:linear-gradient(135deg,#95c13d 0%,#7ba82d 100%);"><span id="submitBtnText">Save</span></button>' +
+        '<button type="button" onclick="closeAddModal()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium">Cancel</button>';
+}
 
-        document.getElementById('addModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeAddModal();
-            }
-        });
+function editRecord(index) {
+    var record = tableData[index];
+    document.getElementById('editIndex').value = index;
+    document.getElementById('modalTitle').textContent = 'Edit CP Manager';
 
-        document.getElementById('resetPasswordModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeResetPasswordModal();
-            }
-        });
+    populateReportsToDropdown(record.reportsTo);
 
-        // Initialize on page load
-        renderTable();
-    </script>
+    document.getElementById('name').value        = record.name;
+    document.getElementById('email').value       = record.email;
+    document.getElementById('phone').value       = record.phone;
+    document.getElementById('designation').value = record.designation;
+    document.getElementById('status').value      = record.status;
+
+    document.getElementById('modalButtons').innerHTML =
+        '<button type="submit" class="flex-1 text-white px-4 py-2 rounded-lg font-medium" style="background:linear-gradient(135deg,#95c13d 0%,#7ba82d 100%);"><span id="submitBtnText">Update</span></button>' +
+        '<button type="button" onclick="closeAddModal()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium">Cancel</button>';
+
+    openAddModal();
+}
+
+function handleSubmit(event) {
+    event.preventDefault();
+    var fd        = new FormData(event.target);
+    var editIndex = document.getElementById('editIndex').value;
+
+    var entry = {
+        name:        fd.get('name'),
+        email:       fd.get('email'),
+        phone:       fd.get('phone'),
+        designation: fd.get('designation'),
+        reportsTo:   fd.get('reportsTo'),
+        status:      fd.get('status')
+    };
+
+    if (editIndex !== '') {
+        tableData[parseInt(editIndex)] = Object.assign({}, tableData[parseInt(editIndex)], entry);
+        showNotification('CP Manager updated successfully!');
+    } else {
+        var newId = 'CPM' + String(tableData.length + 1).padStart(3, '0');
+        tableData.unshift(Object.assign({ id: newId, dateCreated: new Date().toISOString().split('T')[0], channelPartnersCount: 0 }, entry));
+        showNotification('CP Manager added successfully!');
+    }
+
+    filterTable();
+    closeAddModal();
+}
+
+// ─── Reset Password ───────────────────────────────────────────────────────────
+function openResetPasswordModal(index) {
+    var record = tableData[index];
+    document.getElementById('resetUserIndex').value       = index;
+    document.getElementById('resetUserName').textContent  = record.name;
+    document.getElementById('resetUserEmail').textContent = record.email;
+    document.getElementById('resetPasswordModal').classList.add('active');
+    document.getElementById('resetPasswordForm').reset();
+    document.getElementById('passwordStrengthBar').style.width = '0%';
+    document.getElementById('passwordStrengthBar').style.backgroundColor = '#e5e7eb';
+    document.getElementById('passwordStrengthText').textContent = 'Password strength: None';
+    document.getElementById('passwordMatchText').textContent = '';
+}
+
+function closeResetPasswordModal() {
+    document.getElementById('resetPasswordModal').classList.remove('active');
+    document.getElementById('resetPasswordForm').reset();
+}
+
+function togglePasswordVisibility(inputId) {
+    var input = document.getElementById(inputId);
+    input.type = input.type === 'password' ? 'text' : 'password';
+}
+
+function checkPasswordStrength() {
+    var pw  = document.getElementById('newPassword').value;
+    var bar = document.getElementById('passwordStrengthBar');
+    var txt = document.getElementById('passwordStrengthText');
+    var str = 0;
+    if (pw.length >= 8)  str += 25;
+    if (pw.length >= 12) str += 25;
+    if (/[a-z]/.test(pw) && /[A-Z]/.test(pw)) str += 20;
+    if (/[0-9]/.test(pw))        str += 15;
+    if (/[^a-zA-Z0-9]/.test(pw)) str += 15;
+    var map = [[25,'Weak','#ef4444'],[50,'Fair','#f59e0b'],[75,'Good','#3b82f6'],[100,'Strong','#10b981']];
+    var entry = map.find(function(m){ return str <= m[0]; }) || map[3];
+    bar.style.width = str + '%'; bar.style.backgroundColor = entry[2];
+    txt.textContent = 'Password strength: ' + entry[1]; txt.style.color = entry[2];
+    checkPasswordMatch();
+}
+
+function checkPasswordMatch() {
+    var np = document.getElementById('newPassword').value;
+    var cp = document.getElementById('confirmPassword').value;
+    var el = document.getElementById('passwordMatchText');
+    if (!cp) { el.textContent = ''; return; }
+    if (np === cp) { el.textContent = '✓ Passwords match';      el.style.color = '#10b981'; }
+    else           { el.textContent = '✗ Passwords do not match'; el.style.color = '#ef4444'; }
+}
+
+function handleResetPassword(event) {
+    event.preventDefault();
+    var np    = document.getElementById('newPassword').value;
+    var cp    = document.getElementById('confirmPassword').value;
+    var index = parseInt(document.getElementById('resetUserIndex').value);
+    if (np !== cp)     { alert('Passwords do not match!'); return; }
+    if (np.length < 8) { alert('Password must be at least 8 characters!'); return; }
+    showNotification('Password reset successfully for ' + tableData[index].name + '.');
+    closeResetPasswordModal();
+}
+
+// ─── Notification ─────────────────────────────────────────────────────────────
+function showNotification(msg) {
+    document.getElementById('notificationMessage').textContent = msg;
+    document.getElementById('notification').classList.add('show');
+    setTimeout(hideNotification, 5000);
+}
+function hideNotification() { document.getElementById('notification').classList.remove('show'); }
+
+// ─── Misc ─────────────────────────────────────────────────────────────────────
+function toggleUserMenu()  { document.getElementById('userMenu').classList.toggle('active'); }
+function toggleMobileMenu(){ document.getElementById('mobileMenu').classList.toggle('hidden'); }
+function handleLogout()    { if (confirm('Are you sure you want to logout?')) window.location.href = '../auth/login-org.html'; }
+
+// Outside-click: close all dropdowns when clicking outside a filter wrapper or user menu
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.filter-dropdown-wrap') && !e.target.closest('#userMenu') && !e.target.closest('[onclick="toggleUserMenu()"]')) {
+        document.querySelectorAll('.dropdown-menu').forEach(function(m){ m.classList.remove('active'); });
+    }
+});
+
+document.getElementById('addModal').addEventListener('click', function(e){ if (e.target === this) closeAddModal(); });
+document.getElementById('resetPasswordModal').addEventListener('click', function(e){ if (e.target === this) closeResetPasswordModal(); });
+
+// ─── Boot ─────────────────────────────────────────────────────────────────────
+populateFilterLists();
+renderTable();
+</script>
 </body>
 </html>
